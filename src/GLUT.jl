@@ -7,7 +7,7 @@ using OpenGLAux
 
 module GLUT
 
-load("util/get_c.jl")
+require("GetC")
 import GetC.@get_c_fun
 
 glut = dlopen("libglut")

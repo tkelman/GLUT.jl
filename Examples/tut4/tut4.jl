@@ -5,21 +5,21 @@
 
 # load necessary GLUT/GLU/OpenGL routines
 
-require("OpenGL")
-require("GLU")
 require("GLUT")
-using OpenGL
-using GLU
 using GLUT
 
 # initialize variables
 
-rtri  = 0.0
-rquad = 0.0
+global window
+global rtri  = 0.0
+global rquad = 0.0
+
+width        = 640
+height       = 480
 
 # function to init OpenGL context
 
-function initGL()
+function initGL(w::Integer,h::Integer)
   glclearcolor(0.0, 0.0, 0.0, 0.0)
   glcleardepth(1.0)			 
   gldepthfunc(GL_LESS)	 
@@ -29,7 +29,7 @@ function initGL()
   glmatrixmode(GL_PROJECTION)
   glloadidentity()
 
-  #gluperspective(45.0,w/h,0.1,100.0)
+  gluperspective(45.0,w/h,0.1,100.0)
 
   glmatrixmode(GL_MODELVIEW)
 end
@@ -46,7 +46,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
     glmatrixmode(GL_PROJECTION)
     glloadidentity()
 
-    #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
     glmatrixmode(GL_MODELVIEW)
 end
@@ -54,6 +54,9 @@ end
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
+    global rtri
+    global rquad
+
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
@@ -84,19 +87,27 @@ function DrawGLScene()
         glvertex(-0.2,-0.2,0.0)
     glend()
 
-    rtri  +=0.2
-    rquad -=0.2
+    rtri  += 0.2
+    rquad -= 0.2
 
     glutswapbuffers()
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
+function keyPressed(key::Char,x::Int32,y::Int32)
+    if key == int('q')
+        glutdestroywindow(window)
+    end
+end
+
+_keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
+
 # run GLUT routines
 
 glutinit([1], ["a"])
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(640, 480)
+glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
 window = glutcreatewindow("NeHe Tut 4")
@@ -106,7 +117,8 @@ glutfullscreen()
 
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
+glutkeyboardfunc(_keyPressed)
 
-initGL()
+initGL(width, height)
 
 glutmainloop()

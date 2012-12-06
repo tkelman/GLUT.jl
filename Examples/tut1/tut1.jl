@@ -12,9 +12,12 @@ using GLUT
 
 global window
 
+width = 640
+height = 480
+
 # function to init OpenGL context
 
-function initGL()
+function initGL(w::Integer,h::Integer)
     glclearcolor(0.0, 0.0, 0.0, 0.0)
     glcleardepth(1.0)			 
     gldepthfunc(GL_LESS)	 
@@ -69,7 +72,7 @@ _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
 glutinit([1], ["a"])
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(640, 480)
+glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
 window = glutcreatewindow("NeHe Tut 1")
@@ -81,6 +84,6 @@ glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
 glutkeyboardfunc(_keyPressed)
 
-initGL()
+initGL(width, height)
 
 glutmainloop()

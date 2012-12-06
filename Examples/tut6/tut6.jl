@@ -114,7 +114,7 @@ end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
 
-function ReSizeGLScene{T}(w::Int32,h::Int32)
+function ReSizeGLScene(w::Int32,h::Int32)
     if h == 0
         h = 1
     end

@@ -1,7 +1,7 @@
-require("GLU")
+#require("GLU")
 require("OpenGL")
 require("OpenGL/src/OpenGLAux")
-using GLU
+#using GLU
 using OpenGL
 using OpenGLAux
 

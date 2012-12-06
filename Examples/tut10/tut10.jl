@@ -3,10 +3,10 @@
 # NeHe Tut 10 - Move around in a 3D world
 
 
-# load necessary GL/SDL routines
+# load necessary GLUT/GLU/OpenGL routines
 
-load("initGL.jl")
-initGL()
+require("GLUT")
+using GLUT
 
 # initialize global variables
 
@@ -95,22 +95,56 @@ tex1 = SDLIMGLoad("mud.bmp",1)
 tex2 = SDLIMGLoad("mud.bmp",2)
 tex3 = SDLIMGLoad("mud.bmp",3)
 
-# initialize lights
+# function to init OpenGL context
 
-gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
-gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
-gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
+function initGL()
+  glclearcolor(0.0, 0.0, 0.0, 0.0)
+  glcleardepth(1.0)			 
+  gldepthfunc(GL_LESS)	 
+  glenable(GL_DEPTH_TEST)
+  glshademodel(GL_SMOOTH)
 
-glenable(GL_LIGHT1)
+  # initialize lights
+  gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
+  gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
+  gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
-# enable texture mapping and alpha blending
+  glenable(GL_LIGHT1)
 
-glenable({GL_TEXTURE_2D, GL_BLEND})
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
+  # enable texture mapping and alpha blending
+  glenable({GL_TEXTURE_2D, GL_BLEND})
+  glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
-# drawing routines
+  glmatrixmode(GL_PROJECTION)
+  glloadidentity()
 
-while true
+  #gluperspective(45.0,w/h,0.1,100.0)
+
+  glmatrixmode(GL_MODELVIEW)
+end
+
+# prepare Julia equivalents of C callbacks that are typically used in GLUT code
+
+function ReSizeGLScene(w::Int32,h::Int32)
+    if h == 0
+        h = 1
+    end
+
+    glviewport(0,0,w,h)
+
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
+
+    #gluperspective(45.0,w/h,0.1,100.0)
+
+    glmatrixmode(GL_MODELVIEW)
+end
+
+_ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
+
+function DrawGLScene()
+    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glloadidentity()
 
     xtrans = -xpos
     ztrans = -zpos
@@ -130,7 +164,7 @@ while true
     end
 
     for face = 1:numtriangles
-        @with glprimitive(GL_TRIANGLES) begin
+        glbegin(GL_TRIANGLES)
             glnormal(0.0, 0.0, 1.0)
             x_m = sector1[face,1,1]
             y_m = sector1[face,1,2]
@@ -155,90 +189,29 @@ while true
             v_m = sector1[face,3,5]
             gltexcoord(u_m,v_m)
             glvertex(x_m,y_m,z_m)
-        end
+        glend()
     end
 
-    SwapAndClear()
-
-    # check key presses
-    while true
-        poll = poll_event()
-        @case poll begin
-            int('q') : return
-            SDL_EVENTS_DONE   : break
-        end
-
-        println("Blend was: $blend")
-        blend = @case poll begin
-            int('b') : (blend ? false : true)
-            default : blend
-        end
-        println("Blend is now: $blend")
-        if !blend
-            glenable(GL_BLEND)
-            gldisable(GL_DEPTH_TEST)
-        else
-            gldisable(GL_BLEND)
-            glenable(GL_DEPTH_TEST)
-        end
-
-        println("Light was: $light")
-        light = @case poll begin
-            int('l') : (light ? false : true)
-            default : light
-        end                                      
-        println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
-            glenable(GL_LIGHTING)
-        end
-
-        println("Filter was: $filter")
-        filter += @case poll begin
-            int('f') : 1
-            default : 0
-        end
-        if filter > 2
-            filter = 0
-        end
-        println("Filter is now: $filter")
-
-        lookupdown += @case poll begin
-            int('w') : -0.2
-            int('s') : 1.0
-            default : 0.0
-        end
-
-        xpos += @case poll begin
-            SDLK_UP : -sin(degrees2radians(yrot))*0.05
-            SDLK_DOWN : sin(degrees2radians(yrot))*0.05
-            default : 0.0
-        end
-
-        zpos += @case poll begin
-            SDLK_UP : -cos(degrees2radians(yrot))*0.05
-            SDLK_DOWN : cos(degrees2radians(yrot))*0.05
-            default : 0.0
-        end
-
-        walkbiasangle += @case poll begin
-            SDLK_UP : 10
-            SDLK_DOWN : 10
-            default : 0.0
-        end
-        if walkbiasangle <= 1.0
-            walkbiasangle = 359.0
-        elseif walkbiasangle >= 359.0
-            walkbiasangle = 0.0
-        end
-        walkbiasangle = sin(degrees2radians(walkbiasangle))/20.0
-
-        yrot += @case poll begin
-            SDLK_LEFT : 1.5
-            SDLK_RIGHT : -1.5
-            default : 0.0
-        end
-    end
-
+    glutswapbuffers()
 end
+   
+_DrawGLScene = cfunction(DrawGLScene, Void, ())
+
+# run GLUT routines
+
+glutinit([1], ["a"])
+glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutinitwindowsize(640, 480)
+glutinitwindowposition(0, 0)
+
+window = glutcreatewindow("NeHe Tut 10")
+
+glutdisplayfunc(_DrawGLScene)
+glutfullscreen()
+
+glutidlefunc(_DrawGLScene)
+glutreshapefunc(_ReSizeGLScene)
+
+initGL()
+
+glutmainloop()

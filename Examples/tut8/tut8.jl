@@ -3,15 +3,15 @@
 # NeHe Tut 8 - Implement lights and rotate an alpha-blended, textured cube
 
 
-# load necessary GL/SDL routines
+# load necessary GLUT/GLU/OpenGL routines
 
-load("initGL.jl")
-initGL()
+require("GLUT")
+using GLUT
 
 ### auxiliary functions
 
 function cube(size)  # the cube function now includes surface normal specification for proper lighting
-  @with glprimitive(GL_QUADS) begin
+  glbegin(GL_QUADS)
     # Front Face
     glnormal(0.0,0.0,1.0)
     gltexcoord(0.0, 0.0)
@@ -77,7 +77,7 @@ function cube(size)  # the cube function now includes surface normal specificati
     glvertex(-size, size, size)
     gltexcoord(0.0, 1.0)
     glvertex(-size, size, -size)
-  end
+  glend()
 end
 
 ### end of auxiliary functions
@@ -107,26 +107,59 @@ tex1 = SDLIMGLoad("glass.bmp",1) # nearest filtering
 tex2 = SDLIMGLoad("glass.bmp",2) # linear filtering
 tex3 = SDLIMGLoad("glass.bmp",3) # mipmap filtering
 
-# initialize lights
+# function to init OpenGL context
 
-gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
-gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
-gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
+function initGL()
+  glclearcolor(0.0, 0.0, 0.0, 0.0)
+  glcleardepth(1.0)			 
+  gldepthfunc(GL_LESS)	 
+  glenable(GL_DEPTH_TEST)
+  glshademodel(GL_SMOOTH)
 
-glenable(GL_LIGHT1)
+  # initialize lights
+  gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
+  gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
+  gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
-# enable texture mapping
+  glenable(GL_LIGHT1)
 
-glenable(GL_TEXTURE_2D)
+  # enable texture mapping
+  glenable(GL_TEXTURE_2D)
 
-# enable alpha blending for textures
+  # enable alpha blending for textures
+  glblendfunc(GL_SRC_ALPHA, GL_ONE)
+  glcolor(1.0, 1.0, 1.0, 0.5)
 
-glblendfunc(GL_SRC_ALPHA, GL_ONE)
-glcolor(1.0, 1.0, 1.0, 0.5)
+  glmatrixmode(GL_PROJECTION)
+  glloadidentity()
 
-# drawing routines
+  #gluperspective(45.0,w/h,0.1,100.0)
 
-while true
+  glmatrixmode(GL_MODELVIEW)
+end
+
+# prepare Julia equivalents of C callbacks that are typically used in GLUT code
+
+function ReSizeGLScene(w::Int32,h::Int32)
+    if h == 0
+        h = 1
+    end
+
+    glviewport(0,0,w,h)
+
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
+
+    #gluperspective(45.0,w/h,0.1,100.0)
+
+    glmatrixmode(GL_MODELVIEW)
+end
+
+_ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
+
+function DrawGLScene()
+    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glloadidentity()
 
     gltranslate(0.0, 0.0, z)
 
@@ -145,69 +178,26 @@ while true
     xrot +=xspeed
     yrot +=yspeed
 
-    SwapAndClear()
-
-    # check key presses
-    while true
-        poll = poll_event()
-        @case poll begin
-            int('q') : return
-            SDL_EVENTS_DONE   : break
-        end
-
-        println("Blend was: $blend")
-        blend = @case poll begin
-            int('b') : (blend ? false : true)
-            default : blend
-        end
-        println("Blend is now: $blend")
-        if !blend
-            glenable(GL_BLEND)
-            gldisable(GL_DEPTH_TEST)
-        else
-            gldisable(GL_BLEND)
-            glenable(GL_DEPTH_TEST)
-        end
-
-        println("Light was: $light")
-        light = @case poll begin
-            int('l') : (light ? false : true)
-            default : light
-        end
-        println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
-            glenable(GL_LIGHTING)
-        end
-
-        println("Filter was: $filter")
-        filter += @case poll begin
-            int('f') : 1
-            default : 0
-        end
-        if filter > 2
-            filter = 0
-        end
-        println("Filter is now: $filter")
-
-        z += @case poll begin
-            SDLK_PAGEUP : -0.02
-            SDLK_PAGEDOWN : 0.02
-            default : 0.0
-        end
-
-        xspeed += @case poll begin
-            SDLK_UP : -0.01
-            SDLK_DOWN : 0.01
-            default : 0.0
-        end
-
-        yspeed += @case poll begin
-            SDLK_LEFT : -0.01
-            SDLK_RIGHT : 0.01
-            default : 0.0
-        end
-    end
-
+    glutswapbuffers()
 end
+   
+_DrawGLScene = cfunction(DrawGLScene, Void, ())
+
+# run GLUT routines
+
+glutinit([1], ["a"])
+glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutinitwindowsize(640, 480)
+glutinitwindowposition(0, 0)
+
+window = glutcreatewindow("NeHe Tut 8")
+
+glutdisplayfunc(_DrawGLScene)
+glutfullscreen()
+
+glutidlefunc(_DrawGLScene)
+glutreshapefunc(_ReSizeGLScene)
+
+initGL()
+
+glutmainloop()

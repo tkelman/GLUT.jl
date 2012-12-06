@@ -1,6 +1,13 @@
+require("GLU")
+require("OpenGL")
+require("OpenGL/src/OpenGLAux")
+require("GetC")
+using GLU
+using OpenGL
+using OpenGLAux
+
 module GLUT
 
-load("../util/get_c.jl")
 import GetC.@get_c_fun
 
 glut = dlopen("libglut")

@@ -1,11 +1,15 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
-# NeHe Tut 1 - Open a window
+# NeHe Tut 3 - Draw a colored (rainbow) triangle and a colored (blue) square
 
 
 # load necessary GLUT/GLU/OpenGL routines
 
+require("OpenGL")
+require("GLU")
 require("GLUT")
+using OpenGL
+using GLU
 using GLUT
 
 # function to init OpenGL context
@@ -48,6 +52,27 @@ function DrawGLScene()
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
+    gltranslate(-0.2,0.0,-0.6)
+
+    glbegin(GL_POLYGON)
+      glcolor(1.0,0,0)
+      glvertex(0.0,0.2,0.0)
+      glcolor(0,1.0,0)
+      glvertex(-0.2,-0.2,0.0)
+      glcolor(0,0,1.0)
+      glvertex(0.2,-0.2,0.0)
+    glend()
+
+    gltranslate(0.8,0,0)
+
+    glcolor(0.5,0.5,1.0)
+    glbegin(GL_QUADS)
+        glvertex(-0.2,0.2,0.0)
+        glvertex(0.2,0.2,0.0)
+        glvertex(0.2,-0.2,0.0)
+        glvertex(-0.2,-0.2,0.0)
+    glend()
+
     glutswapbuffers()
 end
    
@@ -60,7 +85,7 @@ glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(640, 480)
 glutinitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 1")
+window = glutcreatewindow("NeHe Tut 3")
 
 glutdisplayfunc(_DrawGLScene)
 glutfullscreen()

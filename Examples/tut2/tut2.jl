@@ -1,6 +1,6 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
-# NeHe Tut 1 - Open a window
+# NeHe Tut 2 - Draw a triangle and a square
 
 
 # load necessary GLUT/GLU/OpenGL routines
@@ -48,6 +48,25 @@ function DrawGLScene()
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
+    glcolor(1.0,1.0,1.0)
+
+    gltranslate(-0.4,0.0,-0.3)
+
+    glbegin(GL_POLYGON)
+      glvertex(0.0,0.2,0.0)
+      glvertex(-0.2,-0.2,0.0)
+      glvertex(0.2,-0.2,0.0)
+    glend()
+
+    gltranslate(0.8,0.0,0.0)
+
+    glbegin(GL_QUADS)
+        glvertex(-0.2,0.2,0.0)
+        glvertex(0.2,0.2,0.0)
+        glvertex(0.2,-0.2,0.0)
+        glvertex(-0.2,-0.2,0.0)
+    glend()
+
     glutswapbuffers()
 end
    
@@ -60,7 +79,7 @@ glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(640, 480)
 glutinitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 1")
+window = glutcreatewindow("NeHe Tut 2")
 
 glutdisplayfunc(_DrawGLScene)
 glutfullscreen()

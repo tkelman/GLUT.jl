@@ -20,18 +20,19 @@ height       = 480
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-  glclearcolor(0.0, 0.0, 0.0, 0.0)
-  glcleardepth(1.0)			 
-  gldepthfunc(GL_LESS)	 
-  glenable(GL_DEPTH_TEST)
-  glshademodel(GL_SMOOTH)
+    glviewport(0,0,w,h)
+    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glcleardepth(1.0)			 
+    gldepthfunc(GL_LESS)	 
+    glenable(GL_DEPTH_TEST)
+    glshademodel(GL_SMOOTH)
 
-  glmatrixmode(GL_PROJECTION)
-  glloadidentity()
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
 
-  gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
-  glmatrixmode(GL_MODELVIEW)
+    glmatrixmode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -60,31 +61,31 @@ function DrawGLScene()
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    gltranslate(-0.3,0.0,-0.6)
+    gltranslate(-1.5,0.0,-6.0)
     glrotate(rtri,0.0,1.0,0.0)
 
     glbegin(GL_POLYGON)
       glcolor(1.0,0,0)
-      glvertex(0.0,0.2,0.0)
+      glvertex(0.0,1.0,0.0)
       glcolor(0,1.0,0)
-      glvertex(0.2,-0.2,0.0)
+      glvertex(1.0,-1.0,0.0)
       glcolor(0,0,1.0)
-      glvertex(-0.2,-0.2,0.0)
+      glvertex(-1.0,-1.0,0.0)
     glend()
 
     glloadidentity()
 
-    gltranslate(0.3,0.0,-0.6)
+    gltranslate(1.5,0.0,-6.0)
     glrotate(rquad,1.0,0.0,0.0)
 
     gltranslate(0.8,0,0)
 
     glcolor(0.5,0.5,1.0)
     glbegin(GL_QUADS)
-        glvertex(-0.2,0.2,0.0)
-        glvertex(0.2,0.2,0.0)
-        glvertex(0.2,-0.2,0.0)
-        glvertex(-0.2,-0.2,0.0)
+        glvertex(-1.0,1.0,0.0)
+        glvertex(1.0,1.0,0.0)
+        glvertex(1.0,-1.0,0.0)
+        glvertex(-1.0,-1.0,0.0)
     glend()
 
     rtri  += 0.2

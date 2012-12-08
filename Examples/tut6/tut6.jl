@@ -5,9 +5,10 @@
 
 # load necessary GLUT/GLU/OpenGL routines
 
+load("extras/image.jl")
+
 require("GLUT")
 using GLUT
->>>>>>> fd86c53c32d2ef5636f543e0a110458efd4e3965
 
 ### auxiliary functions
 
@@ -85,33 +86,45 @@ global xrot = 0.0
 global yrot = 0.0
 global zrot = 0.0
 
-cube_size   = 0.2
+global tex  = Array(Uint8,1) # generating 1 texture
+
+cube_size   = 1.0
 
 width       = 640
 height      = 480
 
 # load textures from images
 
-tex = SDLIMGLoad("NeHe.bmp")
+function LoadGLTextures()
+    global tex
+    img  = imread("NeHe.bmp")
+    glgentextures(1,tex)
+    glbindtexture(GL_TEXTURE_2D,tex[1])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-  glclearcolor(0.0, 0.0, 0.0, 0.0)
-  glcleardepth(1.0)			 
-  gldepthfunc(GL_LESS)	 
-  glenable(GL_DEPTH_TEST)
-  glshademodel(GL_SMOOTH)
+    glviewport(0,0,w,h)
+    LoadGLTextures()
+    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glcleardepth(1.0)			 
+    gldepthfunc(GL_LESS)	 
+    glenable(GL_DEPTH_TEST)
+    glshademodel(GL_SMOOTH)
 
-  # enable texture mapping
-  glenable(GL_TEXTURE_2D)
+    # enable texture mapping
+    glenable(GL_TEXTURE_2D)
 
-  glmatrixmode(GL_PROJECTION)
-  glloadidentity()
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
 
-  gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
-  glmatrixmode(GL_MODELVIEW)
+    glmatrixmode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -134,16 +147,20 @@ end
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
+    global tex
+    global xrot
+    global yrot
+    global zrot
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    gltranslate(0.0, 0.0, 0.8)
+    gltranslate(0.0, 0.0, -5.0)
 
     glrotate(xrot,1.0,0.0,0.0)
     glrotate(yrot,0.0,1.0,0.0)
     glrotate(zrot,0.0,0.0,1.0)
 
-    glbindtexture(GL_TEXTURE_2D,tex)
+    glbindtexture(GL_TEXTURE_2D,tex[1])
     cube(cube_size)
 
     xrot +=0.2

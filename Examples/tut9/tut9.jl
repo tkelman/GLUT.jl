@@ -12,7 +12,7 @@ using GLUT
 
 const STAR_NUM      = 50
 const max_star_dist = 0.3
-const star_size     = 0.1
+const star_size     = 1.0
 
 type star
     r::Int  
@@ -37,35 +37,52 @@ for loop = 1:STAR_NUM-1
     stars = [stars star(tempr,tempg,tempb,loop*1.0/STAR_NUM*max_star_dist,0.0)]
 end # I haven't found a better way to make an array of composite types
 
-tilt    = 90.0
-zoom    = 0.8
-spin    = 0.0
+global window
 
-twinkle = false
+global tilt    = 90.0
+global zoom    = -15.0
+global spin    = 0.0
+
+global twinkle = false
+
+global tex     = Array(Uint8,1) # generating 1 texture
+
+width          = 640
+height         = 480
 
 # load textures from images
 
-tex1 = SDLIMGLoad("Star.bmp")
+function LoadGLTextures()
+    global tex
+    img  = imread("Star.bmp")
+    glgentextures(1,tex)
+    glbindtexture(GL_TEXTURE_2D,tex[1])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+end
 
 # function to init OpenGL context
 
-function initGL()
-  glclearcolor(0.0, 0.0, 0.0, 0.0)
-  glcleardepth(1.0)			 
-  gldepthfunc(GL_LESS)	 
-  glenable(GL_DEPTH_TEST)
-  glshademodel(GL_SMOOTH)
+function initGL(w::Integer,h::Integer)
+    glviewport(0,0,w,h)
+    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glcleardepth(1.0)			 
+    gldepthfunc(GL_LESS)	 
+    glenable(GL_DEPTH_TEST)
+    glshademodel(GL_SMOOTH)
 
-  # enable texture mapping and alpha blending
-  glblendfunc(GL_SRC_ALPHA, GL_ONE)
-  glenable({GL_TEXTURE_2D, GL_BLEND})
+    # enable texture mapping and alpha blending
+    glblendfunc(GL_SRC_ALPHA, GL_ONE)
+    glenable(GL_TEXTURE_2D)
+    glenable(GL_BLEND)
 
-  glmatrixmode(GL_PROJECTION)
-  glloadidentity()
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
 
-  #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
-  glmatrixmode(GL_MODELVIEW)
+    glmatrixmode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -80,7 +97,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
     glmatrixmode(GL_PROJECTION)
     glloadidentity()
 
-    #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
     glmatrixmode(GL_MODELVIEW)
 end
@@ -88,10 +105,20 @@ end
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
+    global zoom
+    global stars
+    global tilt
+    global twinkle
+    global STAR_NUM
+    global tex
+    global spin
+    global star_size
+    global max_star_dist
+
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    glbindtexture(GL_TEXTURE_2D,tex1)
+    glbindtexture(GL_TEXTURE_2D,tex[1])
 
     for loop = 1:STAR_NUM
 
@@ -156,11 +183,19 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
+function keyPressed(key::Char,x::Int32,y::Int32)
+    if key == int('q')
+        glutdestroywindow(window)
+    end
+end
+
+_keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
+
 # run GLUT routines
 
 glutinit([1], ["a"])
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(640, 480)
+glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
 window = glutcreatewindow("NeHe Tut 9")
@@ -170,7 +205,8 @@ glutfullscreen()
 
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
+glutkeyboardfunc(_keyPressed)
 
-initGL()
+initGL(width, height)
 
 glutmainloop()

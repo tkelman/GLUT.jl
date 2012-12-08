@@ -15,8 +15,8 @@ global window
 global rpyr  = 0.0
 global rquad = 0.0
 
-pyr_size     = 0.2
-cube_size    = 0.2
+pyr_size     = 1.0
+cube_size    = 1.0
 
 width        = 640
 height       = 480
@@ -24,18 +24,19 @@ height       = 480
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-  glclearcolor(0.0, 0.0, 0.0, 0.0)
-  glcleardepth(1.0)			 
-  gldepthfunc(GL_LESS)	 
-  glenable(GL_DEPTH_TEST)
-  glshademodel(GL_SMOOTH)
+    glviewport(0,0,w,h)
+    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glcleardepth(1.0)			 
+    gldepthfunc(GL_LESS)	 
+    glenable(GL_DEPTH_TEST)
+    glshademodel(GL_SMOOTH)
 
-  glmatrixmode(GL_PROJECTION)
-  glloadidentity()
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
 
-  gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
-  glmatrixmode(GL_MODELVIEW)
+    glmatrixmode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -64,7 +65,7 @@ function DrawGLScene()
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    gltranslate(-0.3,0.0,-0.6)
+    gltranslate(-1.5,0.0,-6.0)
     glrotate(rpyr,0.0,1.0,0.0)
 
     glbegin(GL_POLYGON)
@@ -103,7 +104,7 @@ function DrawGLScene()
 
     glloadidentity()
 
-    gltranslate(0.3,0.0,-0.65)
+    gltranslate(1.5,0.0,-7.0)
     glrotate(rquad,1.0,1.0,1.0)
 
     glcolor(0.5,0.5,1.0)

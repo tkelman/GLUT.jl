@@ -8,10 +8,6 @@
 require("GLUT")
 using GLUT
 
-# initialize global variables
-
-global numtriangles = 0
-
 ### auxiliary functions
 
 function SetupWorld(world_map::String)
@@ -38,7 +34,7 @@ function SetupWorld(world_map::String)
                 z                    = parse_float(z)
                 u                    = parse_float(u)
                 v                    = parse_float(v)
-                sector[loop,vert,:]  = [x,y,z,u,v].*0.25
+                sector[loop,vert,:]  = [x,y,z,u,v]
                 vert                 += 1
                 line                 += 1
             end
@@ -57,33 +53,42 @@ end
 
 # initialize variables
 
-walkbias      = 0.0
-walkbiasangle = 0.0
+global window
 
-lookupdown    = 0.0
+global numtriangles  = 0
 
-xpos          = 0.0
-zpos          = 0.0
+global walkbias      = 0.0
+global walkbiasangle = 0.0
 
-yrot          = 0.0
+global lookupdown    = 0.0
 
-LightAmbient  = [0.5, 0.5, 0.5, 1.0]
-LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
-LightPosition = [0.0, 0.0, 2.0, 1.0]
+global xpos          = 0.0
+global zpos          = 0.0
 
-filter        = 1
-light         = true
-blend         = true
+global yrot          = 0.0
 
-x_m           = 0.0
-y_m           = 0.0
-z_m           = 0.0
-u_m           = 0.0
-v_m           = 0.0
-xtrans        = 0.0
-ytrans        = 0.0
-ztrans        = 0.0
-sceneroty     = 0.0
+LightAmbient         = [0.5, 0.5, 0.5, 1.0]
+LightDiffuse         = [1.0, 1.0, 1.0, 1.0]
+LightPosition        = [0.0, 0.0, 2.0, 1.0]
+
+global filter        = 1
+global light         = true
+global blend         = true
+
+global x_m           = 0.0
+global y_m           = 0.0
+global z_m           = 0.0
+global u_m           = 0.0
+global v_m           = 0.0
+global xtrans        = 0.0
+global ytrans        = 0.0
+global ztrans        = 0.0
+global sceneroty     = 0.0
+
+global tex           = Array(Uint8,3) # generating 3 textures
+
+width                = 640
+height               = 480
 
 # initialize sector1 with SetupWorld
 
@@ -91,36 +96,57 @@ sector1 = SetupWorld("world.txt")
 
 # load textures from images
 
-tex1 = SDLIMGLoad("mud.bmp",1)
-tex2 = SDLIMGLoad("mud.bmp",2)
-tex3 = SDLIMGLoad("mud.bmp",3)
+function LoadGLTextures()
+    global tex
+    img  = imread("mud.bmp")
+    glgentextures(3,tex)
+
+    glbindtexture(GL_TEXTURE_2D,tex[1])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+    glbindtexture(GL_TEXTURE_2D,tex[2])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+    glbindtexture(GL_TEXTURE_2D,tex[3])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+    glubuild2dmipmaps(GL_TEXTURE_2D, 3, size(img,1), size(img,2), GL_RGB, GL_UNSIGNED_BYTE, img)
+end
 
 # function to init OpenGL context
 
-function initGL()
-  glclearcolor(0.0, 0.0, 0.0, 0.0)
-  glcleardepth(1.0)			 
-  gldepthfunc(GL_LESS)	 
-  glenable(GL_DEPTH_TEST)
-  glshademodel(GL_SMOOTH)
+function initGL(w::Integer,h::Integer)
+    glviewport(0,0,w,h)
+    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glcleardepth(1.0)			 
+    gldepthfunc(GL_LESS)	 
+    glenable(GL_DEPTH_TEST)
+    glshademodel(GL_SMOOTH)
 
-  # initialize lights
-  gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
-  gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
-  gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
+    # initialize lights
+    gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
+    gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
+    gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
-  glenable(GL_LIGHT1)
+    glenable(GL_LIGHT1)
 
-  # enable texture mapping and alpha blending
-  glenable({GL_TEXTURE_2D, GL_BLEND})
-  glblendfunc(GL_SRC_ALPHA, GL_ONE)
+    # enable texture mapping and alpha blending
+    glenable(GL_TEXTURE_2D)
+    glenable(GL_BLEND)
+    glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
-  glmatrixmode(GL_PROJECTION)
-  glloadidentity()
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
 
-  #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
-  glmatrixmode(GL_MODELVIEW)
+    glmatrixmode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -135,7 +161,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
     glmatrixmode(GL_PROJECTION)
     glloadidentity()
 
-    #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
     glmatrixmode(GL_MODELVIEW)
 end
@@ -143,6 +169,24 @@ end
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
+    global xtrans
+    global ytrans
+    global ztrans
+    global xpos
+    global ypos
+    global walkbias
+    global sceneroty
+    global yrot
+    global lookupdown
+    global tex
+    global numtriangles
+    global sector1
+    global u_m
+    global v_m
+    global x_m
+    global y_m
+    global z_m
+
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
@@ -156,11 +200,11 @@ function DrawGLScene()
     gltranslate(xtrans, ytrans, ztrans)
 
     if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex1)
+        glbindtexture(GL_TEXTURE_2D,tex[1])
     elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex2)
+        glbindtexture(GL_TEXTURE_2D,tex[2])
     elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex3)
+        glbindtexture(GL_TEXTURE_2D,tex[3])
     end
 
     for face = 1:numtriangles
@@ -197,11 +241,19 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
+function keyPressed(key::Char,x::Int32,y::Int32)
+    if key == int('q')
+        glutdestroywindow(window)
+    end
+end
+
+_keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
+
 # run GLUT routines
 
 glutinit([1], ["a"])
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(640, 480)
+glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
 window = glutcreatewindow("NeHe Tut 10")
@@ -211,7 +263,8 @@ glutfullscreen()
 
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
+glutkeyboardfunc(_keyPressed)
 
-initGL()
+initGL(width, height)
 
 glutmainloop()

@@ -18,6 +18,7 @@ height = 480
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
+    glviewport(0,0,w,h)
     glclearcolor(0.0, 0.0, 0.0, 0.0)
     glcleardepth(1.0)			 
     gldepthfunc(GL_LESS)	 

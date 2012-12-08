@@ -84,18 +84,25 @@ end
 
 # initialize variables
 
-light         = false
-blend         = false
-filter        = 0
+global window
 
-xrot          = 0.0
-yrot          = 0.0
-xspeed        = 0.0
-yspeed        = 0.0
+global light  = false
+global blend  = false
+global filter = 0
 
-z             = 0.8
+global xrot   = 0.0
+global yrot   = 0.0
+global xspeed = 0.0
+global yspeed = 0.0
 
-cube_size     = 0.2
+global tex    = Array(Uint8,3) # generating 3 textures
+
+z             = -5.0
+
+cube_size     = 1.0
+
+width         = 640
+height        = 480
 
 LightAmbient  = [0.5, 0.5, 0.5, 1.0]
 LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
@@ -103,39 +110,59 @@ LightPosition = [0.0, 0.0, 2.0, 1.0]
 
 # load textures from images
 
-tex1 = SDLIMGLoad("glass.bmp",1) # nearest filtering
-tex2 = SDLIMGLoad("glass.bmp",2) # linear filtering
-tex3 = SDLIMGLoad("glass.bmp",3) # mipmap filtering
+function LoadGLTextures()
+    global tex
+    img  = imread("glass.bmp")
+    glgentextures(3,tex)
+
+    glbindtexture(GL_TEXTURE_2D,tex[1])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+    glbindtexture(GL_TEXTURE_2D,tex[2])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+    glbindtexture(GL_TEXTURE_2D,tex[3])
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+
+    glubuild2dmipmaps(GL_TEXTURE_2D, 3, size(img,1), size(img,2), GL_RGB, GL_UNSIGNED_BYTE, img)
+end
 
 # function to init OpenGL context
 
-function initGL()
-  glclearcolor(0.0, 0.0, 0.0, 0.0)
-  glcleardepth(1.0)			 
-  gldepthfunc(GL_LESS)	 
-  glenable(GL_DEPTH_TEST)
-  glshademodel(GL_SMOOTH)
+function initGL(w::Integer,h::Integer)
+    glviewport(0,0,w,h)
+    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glcleardepth(1.0)			 
+    gldepthfunc(GL_LESS)	 
+    glenable(GL_DEPTH_TEST)
+    glshademodel(GL_SMOOTH)
 
-  # initialize lights
-  gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
-  gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
-  gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
+    # initialize lights
+    gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
+    gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
+    gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
-  glenable(GL_LIGHT1)
+    glenable(GL_LIGHT1)
 
-  # enable texture mapping
-  glenable(GL_TEXTURE_2D)
+    # enable texture mapping
+    glenable(GL_TEXTURE_2D)
 
-  # enable alpha blending for textures
-  glblendfunc(GL_SRC_ALPHA, GL_ONE)
-  glcolor(1.0, 1.0, 1.0, 0.5)
+    # enable alpha blending for textures
+    glblendfunc(GL_SRC_ALPHA, GL_ONE)
+    glcolor(1.0, 1.0, 1.0, 0.5)
 
-  glmatrixmode(GL_PROJECTION)
-  glloadidentity()
+    glmatrixmode(GL_PROJECTION)
+    glloadidentity()
 
-  #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
-  glmatrixmode(GL_MODELVIEW)
+    glmatrixmode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -150,7 +177,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
     glmatrixmode(GL_PROJECTION)
     glloadidentity()
 
-    #gluperspective(45.0,w/h,0.1,100.0)
+    gluperspective(45.0,w/h,0.1,100.0)
 
     glmatrixmode(GL_MODELVIEW)
 end
@@ -158,6 +185,15 @@ end
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
+    global z
+    global xrot
+    global yrot
+    global tex
+    global filter
+    global xspeed
+    global yspeed
+    global cube_size
+
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
@@ -167,11 +203,11 @@ function DrawGLScene()
     glrotate(yrot,0.0,1.0,0.0)
 
     if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex1)
+        glbindtexture(GL_TEXTURE_2D,tex[1])
     elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex2)
+        glbindtexture(GL_TEXTURE_2D,tex[2])
     elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex3)
+        glbindtexture(GL_TEXTURE_2D,tex[3])
     end
     cube(cube_size)
 
@@ -183,11 +219,19 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
+function keyPressed(key::Char,x::Int32,y::Int32)
+    if key == int('q')
+        glutdestroywindow(window)
+    end
+end
+
+_keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
+
 # run GLUT routines
 
 glutinit([1], ["a"])
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(640, 480)
+glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
 window = glutcreatewindow("NeHe Tut 8")
@@ -197,7 +241,8 @@ glutfullscreen()
 
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
+glutkeyboardfunc(_keyPressed)
 
-initGL()
+initGL(width, height)
 
 glutmainloop()

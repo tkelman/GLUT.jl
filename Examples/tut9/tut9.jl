@@ -5,6 +5,8 @@
 
 # load necessary GLUT/GLU/OpenGL routines
 
+load("image")
+
 require("GLUT")
 using GLUT
 
@@ -186,6 +188,10 @@ _DrawGLScene = cfunction(DrawGLScene, Void, ())
 function keyPressed(key::Char,x::Int32,y::Int32)
     if key == int('q')
         glutdestroywindow(window)
+    elseif key == int('t')
+        println("Twinkle was: $twinkle")
+        twinkle = (twinkle ? false : true)
+        println("Twinkle is now: $twinkle")
     end
 end
 

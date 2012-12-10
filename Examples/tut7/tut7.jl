@@ -5,7 +5,7 @@
 
 # load necessary GLUT/GLU/OpenGL routines
 
-load("extras/image.jl")
+load("image")
 
 require("GLUT")
 using GLUT
@@ -220,6 +220,22 @@ _DrawGLScene = cfunction(DrawGLScene, Void, ())
 function keyPressed(key::Char,x::Int32,y::Int32)
     if key == int('q')
         glutdestroywindow(window)
+    elseif key == int('l')
+        println("Light was: $light")
+        light = (light ? false : true)
+        println("Light is now: $light")
+        if !light
+            gldisable(GL_LIGHTING)
+        else
+            glenable(GL_LIGHTING)
+        end
+    elseif key == int('f')
+        println("Filter was: $filter")
+        filter += 1
+        if filter > 2
+            filter = 0
+        end
+        println("Filter is now: $filter")
     end
 end
 

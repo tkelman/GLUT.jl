@@ -5,7 +5,7 @@
 
 # load necessary GLUT/GLU/OpenGL routines
 
-load("extras/image.jl")
+load("image")
 
 require("GLUT")
 using GLUT

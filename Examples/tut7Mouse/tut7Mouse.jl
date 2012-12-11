@@ -1,6 +1,6 @@
 # Thu 08 Nov 2012 05:07:44 PM EST
 #
-# NeHe Tut 7 - Implement lights and rotate a textured cube
+# NeHe Tut 7 Mouse - Implement lights and rotate a textured cube with the mouse
 
 
 # load necessary GLUT/GLU/OpenGL routines
@@ -88,26 +88,34 @@ end
 
 global window
 
-global filter    = 0
-global light     = false
+global filter        = 0
+global light         = false
 
-global xrot      = 0.0
-global yrot      = 0.0
-global xspeed    = 0.0
-global yspeed    = 0.0
+global xrot          = 0.0
+global yrot          = 0.0
+global xspeed        = 0.0
+global yspeed        = 0.0
+global x_thresh      = 0.01
+global y_thresh      = 0.01
 
-global tex       = Array(Uint8,3) # generating 3 textures
+global prev_x        = 0
+global prev_y        = 0
 
-global cube_size = 1.0
+global tex           = Array(Uint8,3) # generating 3 textures
 
-z                = -5.0
+global cube_size     = 1.0
 
-width            = 640
-height           = 480
+z                    = -5.0
 
-global LightAmbient     = [0.5, 0.5, 0.5, 1.0]
-global LightDiffuse     = [1.0, 1.0, 1.0, 1.0]
-global LightPosition    = [0.0, 0.0, 2.0, 1.0]
+width                = 640
+height               = 480
+
+global LightAmbient  = [0.5, 0.5, 0.5, 1.0]
+global LightDiffuse  = [1.0, 1.0, 1.0, 1.0]
+global LightPosition = [0.0, 0.0, 2.0, 1.0]
+
+global LButtonD      = false
+global RButtonD      = false
 
 # load textures from images
 
@@ -248,33 +256,91 @@ function keyPressed(key::Char,x::Int32,y::Int32)
         end
         println("Filter is now: $filter")
     end
+    glutpostredisplay()
 end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
-function specialKeyPressed(key::Int32,x::Int32,y::Int32)
+function mousePressed(key::Int32,state::Int32,x::Int32,y::Int32)
+    global LButtonD
+    global RButtonD
+
+    if key == GLUT_LEFT_BUTTON && state == GLUT_DOWN
+        LButtonD = true        
+        println("Right button pressed.")
+    elseif key == GLUT_LEFT_BUTTON && state == GLUT_UP
+        LButtonD = false
+        println("Right button lifted at ($x,$y).")
+    elseif key == GLUT_RIGHT_BUTTON && state == GLUT_DOWN
+        RButtonD = true        
+        println("Right button pressed.")
+    elseif key == GLUT_RIGHT_BUTTON && state == GLUT_UP
+        RButtonD = false
+        println("Right button lifted at ($x,$y).")
+    end
+    glutpostredisplay()
+end
+
+_mousePressed = cfunction(mousePressed, Void, (Int32, Int32, Int32, Int32))
+
+function mouseMoved(x::Int32,y::Int32)
     global z
     global xspeed
     global yspeed
+    global x_thresh
+    global y_thresh
+    global LButtonD
+    global RButtonD
+    global prev_x
+    global prev_y
 
-    if key == GLUT_KEY_PAGE_UP
-        z -= 0.02
-    elseif key == GLUT_KEY_PAGE_DOWN
-        z += 0.02
-    elseif key == GLUT_KEY_UP
-        xspeed -= 0.01
-    elseif key == GLUT_KEY_DOWN
-        xspeed += 0.01
-    elseif key == GLUT_KEY_LEFT
-        yspeed -= 0.01
-    elseif key == GLUT_KEY_RIGHT
-        yspeed += 0.01
+    if LButtonD == true
+        if (x - prev_x) > x_thresh
+            yspeed -= 0.01
+        elseif (x - prev_x) < -x_thresh
+            yspeed += 0.01
+        end
+
+        if (y - prev_y) > y_thresh
+            xspeed -= 0.01
+        elseif (y - prev_y) < -y_thresh
+            xspeed += 0.01
+        end
     end
 
-    return nothing # specialKeyPressed returns "void" in C. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
+    if RButtonD == true
+        if (y - prev_y) > y_thresh
+            z -= 0.02
+        elseif (y - prev_y) < -y_thresh
+            z += 0.02
+        end
+    end
+
+    prev_y = y
+    prev_x = x
+
+    glutpostredisplay()
 end
 
-_specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))
+_mouseMoved = cfunction(mouseMoved, Void, (Int32, Int32))
+
+function mousePassivelyMoved(x::Int32,y::Int32)
+    println("Mouse moved at ($x,$y).")
+    glutpostredisplay()
+end
+
+_mousePassivelyMoved = cfunction(mousePassivelyMoved, Void, (Int32, Int32))
+
+function mouseEntry(state::Int32)
+    if state == GLUT_ENTERED
+       println("Mouse entered window.")
+    else
+       println("Mouse outside window.")
+    end
+    glutpostredisplay()
+end
+
+_mouseEntry = cfunction(mouseEntry, Void, (Int32,))
 
 # run GLUT routines
 
@@ -283,7 +349,7 @@ glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 7")
+window = glutcreatewindow("NeHe Tut 7 - Mouse")
 
 glutdisplayfunc(_DrawGLScene)
 glutfullscreen()
@@ -291,7 +357,10 @@ glutfullscreen()
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
 glutkeyboardfunc(_keyPressed)
-glutspecialfunc(_specialKeyPressed)
+glutmousefunc(_mousePressed)
+glutmotionfunc(_mouseMoved)
+glutpassivemotionfunc(_mousePassivelyMoved)
+glutentryfunc(_mouseEntry)
 
 initGL(width, height)
 

@@ -56,18 +56,24 @@ height         = 480
 
 function LoadGLTextures()
     global tex
-    img  = imread("Star.bmp")
+
+    img3D = imread("Star.bmp")
+    w     = size(img3D,2)
+    h     = size(img3D,1)
+    img   = glimg(img3D) # see OpenGLAux.jl for description
+
     glgentextures(1,tex)
     glbindtexture(GL_TEXTURE_2D,tex[1])
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
     glviewport(0,0,w,h)
+    LoadGLTextures()
     glclearcolor(0.0, 0.0, 0.0, 0.0)
     glcleardepth(1.0)			 
     gldepthfunc(GL_LESS)	 
@@ -186,6 +192,8 @@ end
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
 function keyPressed(key::Char,x::Int32,y::Int32)
+    global twinkle
+
     if key == int('q')
         glutdestroywindow(window)
     elseif key == int('t')
@@ -197,9 +205,28 @@ end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
+function specialKeyPressed(key::Int32,x::Int32,y::Int32)
+    global zoom
+    global tilt
+
+    if key == GLUT_KEY_PAGE_UP
+        zoom -= 0.02
+    elseif key == GLUT_KEY_PAGE_DOWN
+        zoom += 0.02
+    elseif key == GLUT_KEY_UP
+        tilt -= 0.5
+    elseif key == GLUT_KEY_DOWN
+        tilt += 0.5
+    end
+
+    return nothing # specialKeyPressed returns "void" in C. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
+end
+
+_specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))
+
 # run GLUT routines
 
-glutinit([1], ["a"])
+glutinit()
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
@@ -212,6 +239,7 @@ glutfullscreen()
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
 glutkeyboardfunc(_keyPressed)
+glutspecialfunc(_specialKeyPressed)
 
 initGL(width, height)
 

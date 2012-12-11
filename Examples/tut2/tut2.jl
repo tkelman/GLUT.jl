@@ -90,7 +90,7 @@ _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
 # run GLUT routines
 
-glutinit([1], ["a"])
+glutinit()
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)

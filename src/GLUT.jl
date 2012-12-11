@@ -13,7 +13,9 @@ import GetC.@get_c_fun
 glut = dlopen("libglut")
 
 @get_c_fun glut glutinit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
+glutinit() = glutinit([1],["a"])
 export glutinit
+
 @get_c_fun glut glutinitwindowposition glutInitWindowPosition(x::Int32, y::Int32)::Void
 export glutinitwindowposition
 @get_c_fun glut glutinitwindowsize glutInitWindowSize(width::Int32, height::Int32)::Void

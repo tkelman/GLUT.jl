@@ -73,7 +73,7 @@ LightAmbient         = [0.5, 0.5, 0.5, 1.0]
 LightDiffuse         = [1.0, 1.0, 1.0, 1.0]
 LightPosition        = [0.0, 0.0, 2.0, 1.0]
 
-global filter        = 1
+global filter        = 0
 global light         = true
 global blend         = true
 
@@ -100,31 +100,36 @@ sector1 = SetupWorld("world.txt")
 
 function LoadGLTextures()
     global tex
-    img  = imread("mud.bmp")
-    glgentextures(3,tex)
 
+    img3D = imread("mud.bmp")
+    w     = size(img3D,2)
+    h     = size(img3D,1)
+    img   = glimg(img3D) # see OpenGLAux.jl for description
+
+    glgentextures(3,tex)
     glbindtexture(GL_TEXTURE_2D,tex[1])
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
     glbindtexture(GL_TEXTURE_2D,tex[2])
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
     glbindtexture(GL_TEXTURE_2D,tex[3])
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-    glubuild2dmipmaps(GL_TEXTURE_2D, 3, size(img,1), size(img,2), GL_RGB, GL_UNSIGNED_BYTE, img)
+    glubuild2dmipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
     glviewport(0,0,w,h)
+    LoadGLTextures()
     glclearcolor(0.0, 0.0, 0.0, 0.0)
     glcleardepth(1.0)			 
     gldepthfunc(GL_LESS)	 
@@ -244,6 +249,10 @@ end
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
 function keyPressed(key::Char,x::Int32,y::Int32)
+    global blend
+    global light
+    global filter
+
     if key == int('q')
         glutdestroywindow(window)
     elseif key == int('b')
@@ -278,9 +287,53 @@ end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
+function specialKeyPressed(key::Int32,x::Int32,y::Int32)
+    global lookupdown
+    global xpos
+    global zpos
+    global walkbias
+    global walkbiasangle
+    global yrot
+
+    if key == GLUT_KEY_PAGE_UP
+        lookupdown -= 0.2
+    elseif key == GLUT_KEY_PAGE_DOWN
+        lookupdown += 1.0
+    elseif key == GLUT_KEY_UP
+        xpos -= sin(degrees2radians(yrot))*0.05
+        zpos -= cos(degrees2radians(yrot))*0.05
+        walkbias += 10
+        if walkbiasangle <= 359.0
+            walkbiasangle = 0.0
+        else
+            walkbiasangle += 10
+        end
+        walkbias = sin(degrees2radians(walkbiasangle))/20.0
+    elseif key == GLUT_KEY_DOWN
+        xpos += sin(degrees2radians(yrot))*0.05
+        zpos += cos(degrees2radians(yrot))*0.05
+        walkbias -= 10
+        if walkbiasangle <= 1.0
+            walkbiasangle = 359.0
+        else
+            walkbiasangle -= 10
+        end
+        walkbias = sin(degrees2radians(walkbiasangle))/20.0
+    elseif key == GLUT_KEY_LEFT
+        yrot += 1.5
+    elseif key == GLUT_KEY_RIGHT
+        yrot -= 1.5
+    end
+
+
+    return nothing # specialKeyPressed returns "void" in C. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
+end
+
+_specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))
+
 # run GLUT routines
 
-glutinit([1], ["a"])
+glutinit()
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
@@ -293,6 +346,7 @@ glutfullscreen()
 glutidlefunc(_DrawGLScene)
 glutreshapefunc(_ReSizeGLScene)
 glutkeyboardfunc(_keyPressed)
+glutspecialfunc(_specialKeyPressed)
 
 initGL(width, height)
 

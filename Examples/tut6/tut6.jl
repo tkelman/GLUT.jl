@@ -97,12 +97,17 @@ height      = 480
 
 function LoadGLTextures()
     global tex
-    img  = imread("NeHe.bmp")
+
+    img3D = imread("NeHe.bmp")
+    w     = size(img3D,2)
+    h     = size(img3D,1)
+    img   = glimg(img3D) # see OpenGLAux.jl for description
+
     glgentextures(1,tex)
     glbindtexture(GL_TEXTURE_2D,tex[1])
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, size(img,1), size(img,2), 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
@@ -182,7 +187,7 @@ _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
 # run GLUT routines
 
-glutinit([1], ["a"])
+glutinit()
 glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)

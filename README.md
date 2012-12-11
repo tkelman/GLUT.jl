@@ -44,7 +44,7 @@ The VAST majority of work was done by Jasper den Ouden
 examples, and responses to my questions, I would never have been able to put
 this into a Julia package.  All credit goes to him.
 
-I'd also like to thank the Khronos Group (http://www.opengl.org) for making the
+We'd also like to thank the Khronos Group (http://www.opengl.org) for making the
 original GLUT API, a simple and straight-forward way to open windows for OpenGL
 contexts. Plus, thanks to Pawel W. Olstza, Andreas Umbach, Steve Baker, and John
 Fay for the freeglut project (http://freeglut.sourceforge.net), a free,

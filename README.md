@@ -16,7 +16,6 @@ PLEASE NOTE: When used in a Julia file, all of the function names are written in
 lowercase. For example:
 
 #C function                         Julia equivalent
-                         
 
 + glutInit													  glutinit
 + glutCreateWindow									  glcreatewindow

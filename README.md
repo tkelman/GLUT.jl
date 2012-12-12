@@ -37,6 +37,11 @@ At the moment, this has only been tested on a 2010 Macbook running Linux
 (Fedora 17, freeglut) and a custom built PC desktop running Linux (Fedora 17,
 freeglut). Have fun!
 
+#Caveats
+
+At the moment, GLUT callbacks communicate with each other through globals,
+which can make for very messy code. There must be a better way to do this.
+
 #Credit
 
 The VAST majority of work was done by Jasper den Ouden

@@ -1,5 +1,9 @@
-This package is intended to be a fully fledged Julia interface to the GLUT
-implementation on your machine.
+One mention of caution: Please don't use this without saving important work
+first.  I have had two instances in which a GLUT/SDL instance crashed my X11
+session.  It appears to happen very rarely, but no harm in being safe.
+
+This package is intended to be a fully fledged Julia (http://www.julialang.org)
+interface to the GLUT implementation on your machine.
 
 NOTE: Since Julia code doesn't exactly have arguments like a C program would
 have, I made a small wrapper function called glutinit(), which can be called to
@@ -30,7 +34,7 @@ C - Julia comparisons
 + glutCreateWindow - 							  glcreatewindow
 + glutMainLoop - 								 	  glmainloop
 
-See the "Examples" directory for translations of the first ten NeHe tutorials
+See the Examples directory for translations of the first ten NeHe tutorials
 into Julia-GLUT.
 
 At the moment, this has only been tested on a 2010 Macbook running Linux
@@ -55,10 +59,13 @@ contexts. Plus, thanks to Pawel W. Olstza, Andreas Umbach, Steve Baker, and John
 Fay for the freeglut project (http://freeglut.sourceforge.net), a free,
 open-source alternative that has found it's way onto many Linux boxes.
 
+Thanks to NeHe Productions (http://nehe.gamedev.net) for making their excellent
+tutorials, which served as a wonderful test-bed for this interface. 
+
 Thanks to the Julia team (http://julialang.org) for making Julia, a programming
 language that many have been longing for, whether they knew about it or not.
-The "Octave-for-C-programmers," as I like to think of it, is an incredibly fast
+The "Octave-for-C-programmers," as one could think of it, is an incredibly fast
 and powerful programming language that is a welcome breath of fresh air in the
 technical and numerical programming communities.
 
---rennis250 & o-jasper (2012, GPL until further notice)
+--rennis250 & o-jasper

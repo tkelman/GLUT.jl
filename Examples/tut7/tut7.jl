@@ -114,7 +114,7 @@ global LightPosition    = [0.0, 0.0, 2.0, 1.0]
 function LoadGLTextures()
     global tex
 
-    img3D = imread("crate.bmp")
+    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut7/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

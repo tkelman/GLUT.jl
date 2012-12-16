@@ -122,7 +122,7 @@ global RButtonD      = false
 function LoadGLTextures()
     global tex
 
-    img3D = imread("crate.bmp")
+    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut7Mouse/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

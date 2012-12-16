@@ -14,6 +14,7 @@ to make everything work.
 #TODO
 
 + Fix performance hiccups
++ Fix strange graphical issues (e.g., gllighting routines)
 + Find a way to close a GLUT instance without quitting the Julia REPL that
 	created it
 + Fully FFI the whole library
@@ -28,11 +29,21 @@ automatically!)
 PLEASE NOTE: When used in a Julia file, all of the function names are written in
 lowercase. For example:
 
-C - Julia comparisons
+In C-GLUT code, one would write,
 
-+ glutInit - 											  glutinit
-+ glutCreateWindow - 							  glcreatewindow
-+ glutMainLoop - 								 	  glmainloop
+```c
+glutInit
+glutCreateWindow
+glutMainLoop
+```
+
+In a Julia-GLUT code, one would write:
+
+```julia
+glutinit
+glutcreatewindow
+glutmainloop
+```
 
 See the Examples directory for translations of the first ten NeHe tutorials
 into Julia-GLUT.

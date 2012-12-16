@@ -94,7 +94,7 @@ height               = 480
 
 # initialize sector1 with SetupWorld
 
-sector1 = SetupWorld("world.txt")
+sector1 = SetupWorld(path_expand("~/.julia/GLUT/Examples/tut10/world.txt"))
 
 # load textures from images
 

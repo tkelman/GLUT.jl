@@ -95,8 +95,8 @@ global xrot          = 0.0
 global yrot          = 0.0
 global xspeed        = 0.0
 global yspeed        = 0.0
-global x_thresh      = 0.01
-global y_thresh      = 0.01
+global x_thresh      = 1
+global y_thresh      = 1
 
 global prev_x        = 0
 global prev_y        = 0
@@ -267,10 +267,10 @@ function mousePressed(key::Int32,state::Int32,x::Int32,y::Int32)
 
     if key == GLUT_LEFT_BUTTON && state == GLUT_DOWN
         LButtonD = true        
-        println("Right button pressed.")
+        println("Left button pressed.")
     elseif key == GLUT_LEFT_BUTTON && state == GLUT_UP
         LButtonD = false
-        println("Right button lifted at ($x,$y).")
+        println("Left button lifted at ($x,$y).")
     elseif key == GLUT_RIGHT_BUTTON && state == GLUT_DOWN
         RButtonD = true        
         println("Right button pressed.")

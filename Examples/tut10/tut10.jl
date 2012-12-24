@@ -75,7 +75,7 @@ LightPosition        = [0.0, 0.0, 2.0, 1.0]
 
 global filter        = 0
 global light         = true
-global blend         = true
+global blend         = false
 
 global x_m           = 0.0
 global y_m           = 0.0

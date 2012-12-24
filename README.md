@@ -1,9 +1,9 @@
-One mention of caution: Please don't use this without saving important work
-first.  I have had two instances in which a GLUT/SDL instance crashed my X11
-session.  It appears to happen very rarely, but no harm in being safe.
-
 This package is intended to be a fully fledged Julia (http://www.julialang.org)
 interface to the GLUT implementation on your machine.
+
+NOTE: It is recommended that you use the proprietary drivers for your graphics
+card.  Open-source drivers produce poor performance and have caused X11 to
+crash before.
 
 NOTE: Since Julia code doesn't exactly have arguments like a C program would
 have, I made a small wrapper function called glutinit(), which can be called to
@@ -16,14 +16,6 @@ are still not fully implemented. (You can edit the method signatures by hand,
 but it is a painful process.  Jasper's FFI
 (https://github.com/o-jasper/julia-ffi.git) will soon handle this
 automatically!)
-
-#TODO
-
-+ Fix performance hiccups
-+ Fix strange graphical issues (e.g., gllighting routines)
-+ Find a way to close a GLUT instance without quitting the Julia REPL that
-	created it
-+ Fully FFI the whole library
 
 #Usage notes
 
@@ -49,9 +41,7 @@ glutmainloop
 See the Examples directory for translations of the first ten NeHe tutorials
 into Julia-GLUT.
 
-At the moment, this has only been tested on a 2010 Macbook running Linux
-(Fedora 17, freeglut) and a custom built PC desktop running Linux (Fedora 17,
-freeglut). Have fun!
+Have fun!
 
 #Caveats
 

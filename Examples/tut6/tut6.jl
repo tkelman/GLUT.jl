@@ -82,13 +82,13 @@ end
 
 global window
 
-global xrot = 0.0
-global yrot = 0.0
-global zrot = 0.0
+global xrot      = 0.0
+global yrot      = 0.0
+global zrot      = 0.0
 
-global tex  = Array(Uint8,1) # generating 1 texture
+global tex       = Array(Uint8,1) # generating 1 texture
 
-cube_size   = 1.0
+global cube_size = 1.0
 
 width       = 640
 height      = 480

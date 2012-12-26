@@ -12,11 +12,11 @@ using GLUT
 
 global window
 
-global rpyr  = 0.0
-global rquad = 0.0
+global rpyr      = 0.0
+global rquad     = 0.0
 
-pyr_size     = 1.0
-cube_size    = 1.0
+global pyr_size  = 1.0
+global cube_size = 1.0
 
 width        = 640
 height       = 480

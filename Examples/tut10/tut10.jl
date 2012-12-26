@@ -69,9 +69,9 @@ global zpos          = 0.0
 
 global yrot          = 0.0
 
-LightAmbient         = [0.5, 0.5, 0.5, 1.0]
-LightDiffuse         = [1.0, 1.0, 1.0, 1.0]
-LightPosition        = [0.0, 0.0, 2.0, 1.0]
+global LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+global LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 global filter        = 0
 global light         = true
@@ -87,7 +87,7 @@ global ytrans        = 0.0
 global ztrans        = 0.0
 global sceneroty     = 0.0
 
-global tex           = Array(Uint8,3) # generating 3 textures
+global tex           = Array(Uint32,3) # generating 3 textures
 
 width                = 640
 height               = 480
@@ -142,10 +142,10 @@ function initGL(w::Integer,h::Integer)
     gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
     glenable(GL_LIGHT1)
+    glenable(GL_LIGHTING)
 
     # enable texture mapping and alpha blending
     glenable(GL_TEXTURE_2D)
-    glenable(GL_BLEND)
     glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
     glmatrixmode(GL_PROJECTION)
@@ -258,7 +258,7 @@ function keyPressed(key::Char,x::Int32,y::Int32)
     elseif key == int('b')
         println("Blend was: $blend")
         blend = (blend ? false : true)
-        if !blend
+        if blend
             glenable(GL_BLEND)
             gldisable(GL_DEPTH_TEST)
         else
@@ -270,10 +270,10 @@ function keyPressed(key::Char,x::Int32,y::Int32)
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
+        if light
             glenable(GL_LIGHTING)
+        else
+            gldisable(GL_LIGHTING)
         end
     elseif key == int('f')
         println("Filter was: $filter")

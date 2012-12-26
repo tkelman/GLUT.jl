@@ -88,26 +88,26 @@ end
 
 global window
 
-global filter    = 0
-global light     = false
+global filter        = 0
+global light         = false
 
-global xrot      = 0.0
-global yrot      = 0.0
-global xspeed    = 0.0
-global yspeed    = 0.0
+global xrot          = 0.0
+global yrot          = 0.0
+global xspeed        = 0.0
+global yspeed        = 0.0
 
-global tex       = Array(Uint8,3) # generating 3 textures
+global tex           = Array(Uint32,3) # generating 3 textures
 
-global cube_size = 1.0
+global cube_size     = 1.0
 
-z                = -5.0
+global z             = -5.0
 
-width            = 640
-height           = 480
+width                = 640
+height               = 480
 
-global LightAmbient     = [0.5, 0.5, 0.5, 1.0]
-global LightDiffuse     = [1.0, 1.0, 1.0, 1.0]
-global LightPosition    = [0.0, 0.0, 2.0, 1.0]
+global LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
+global LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
+global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
 # load textures from images
 
@@ -170,6 +170,7 @@ function initGL(w::Integer,h::Integer)
     gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
     glenable(GL_LIGHT1)
+    glenable(GL_LIGHTING)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -235,10 +236,10 @@ function keyPressed(key::Char,x::Int32,y::Int32)
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
-        if !light
-            gldisable(GL_LIGHTING)
-        else
+        if light
             glenable(GL_LIGHTING)
+        else
+            gldisable(GL_LIGHTING)
         end
     elseif key == int('f')
         println("Filter was: $filter")

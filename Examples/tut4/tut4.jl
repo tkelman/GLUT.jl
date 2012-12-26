@@ -11,6 +11,7 @@ using GLUT
 # initialize variables
 
 global window
+
 global rtri  = 0.0
 global rquad = 0.0
 

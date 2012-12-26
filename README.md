@@ -30,7 +30,7 @@ glutCreateWindow
 glutMainLoop
 ```
 
-In a Julia-GLUT code, one would write:
+In Julia-GLUT code, one would write:
 
 ```julia
 glutinit

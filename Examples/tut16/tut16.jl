@@ -1,6 +1,6 @@
-# Thu 08 Nov 2012 05:07:44 PM EST
+# Mon 31 Dec 2012 01:39:42 PM EST
 #
-# NeHe Tut 7 - Implement lights and rotate a textured cube
+# NeHe Tut 16 - Implement lights and rotate a textured cube
 
 
 # load necessary GLUT/GLU/OpenGL routines
@@ -89,7 +89,11 @@ end
 global window
 
 global filter        = 3
-global light         = true
+global light         = false
+
+fogMode              = [GL_EXP, GL_EXP2, GL_LINEAR]
+global fogfilter     = 3
+fogColor             = [0.5f0 0.5f0 0.5f0 1.0f0]
 
 global xrot          = 0.0
 global yrot          = 0.0
@@ -114,7 +118,7 @@ global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut7/crate.bmp"))
+    img3D = imread(path_expand("~/my_docs/julia/GLUT.jl/Examples/tut16/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description
@@ -144,6 +148,8 @@ function initGL(w::Integer,h::Integer)
     global LightAmbient 
     global LightDiffuse 
     global LightPosition
+    global fogMode
+    global fogColor
 
     glviewport(0,0,w,h)
     LoadGLTextures()
@@ -151,11 +157,12 @@ function initGL(w::Integer,h::Integer)
     # enable texture mapping
     glenable(GL_TEXTURE_2D)
 
-    glclearcolor(0.0, 0.0, 0.0, 0.0)
+    glclearcolor(0.5, 0.5, 0.5, 1.0)
     glcleardepth(1.0)			 
-    gldepthfunc(GL_LESS)	 
+    gldepthfunc(GL_LEQUAL)	 
     glenable(GL_DEPTH_TEST)
     glshademodel(GL_SMOOTH)
+    glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
     glmatrixmode(GL_PROJECTION)
     glloadidentity()
@@ -171,6 +178,16 @@ function initGL(w::Integer,h::Integer)
 
     glenable(GL_LIGHT1)
     glenable(GL_LIGHTING)
+
+    # intialize fog
+
+    glfogi(GL_FOG_MODE, fogMode[fogfilter])
+    glfogfv(GL_FOG_COLOR, fogColor)
+    glfogf(GL_FOG_DENSITY, 0.35)
+    glhint(GL_FOG_HINT, GL_DONT_CARE)
+    glfogf(GL_FOG_START, 1.0)
+    glfogf(GL_FOG_END, 5.0)
+    glenable(GL_FOG)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -223,6 +240,8 @@ _DrawGLScene = cfunction(DrawGLScene, Void, ())
 function keyPressed(the_key::Char,x::Int32,y::Int32)
     global filter
     global light
+    global fogMode
+    global fogfilter
 
     if the_key == int('q')
         glutdestroywindow(window)
@@ -242,6 +261,14 @@ function keyPressed(the_key::Char,x::Int32,y::Int32)
             filter = 1
         end
         println("Filter is now: $filter")
+    elseif the_key == int('g')
+        println("Fog filter was: $fogfilter")
+        fogfilter += 1
+        if fogfilter > 3
+            fogfilter = 1
+        end
+        glfogi(GL_FOG_MODE, fogMode[fogfilter])
+        println("Fog filter is now: $fogfilter")
     end
 end
 
@@ -278,7 +305,7 @@ glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 7")
+window = glutcreatewindow("NeHe Tut 16")
 
 glutdisplayfunc(_DrawGLScene)
 glutfullscreen()

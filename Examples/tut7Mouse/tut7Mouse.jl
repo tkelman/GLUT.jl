@@ -88,8 +88,8 @@ end
 
 global window
 
-global filter        = 0
-global light         = false
+global filter        = 3
+global light         = true
 
 global xrot          = 0.0
 global yrot          = 0.0
@@ -217,13 +217,7 @@ function DrawGLScene()
     glrotate(xrot,1.0,0.0,0.0)
     glrotate(yrot,0.0,1.0,0.0)
 
-    if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex[1])
-    elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex[2])
-    elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex[3])
-    end
+    glbindtexture(GL_TEXTURE_2D,tex[filter])
     cube(cube_size)
 
     xrot +=xspeed
@@ -234,13 +228,13 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(key::Char,x::Int32,y::Int32)
+function keyPressed(the_key::Char,x::Int32,y::Int32)
     global filter
     global light
 
-    if key == int('q')
+    if the_key == int('q')
         glutdestroywindow(window)
-    elseif key == int('l')
+    elseif the_key == int('l')
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
@@ -249,11 +243,11 @@ function keyPressed(key::Char,x::Int32,y::Int32)
         else
             gldisable(GL_LIGHTING)
         end
-    elseif key == int('f')
+    elseif the_key == int('f')
         println("Filter was: $filter")
         filter += 1
-        if filter > 2
-            filter = 0
+        if filter > 3
+            filter = 1
         end
         println("Filter is now: $filter")
     end
@@ -262,20 +256,20 @@ end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
-function mousePressed(key::Int32,state::Int32,x::Int32,y::Int32)
+function mousePressed(the_key::Int32,state::Int32,x::Int32,y::Int32)
     global LButtonD
     global RButtonD
 
-    if key == GLUT_LEFT_BUTTON && state == GLUT_DOWN
+    if the_key == GLUT_LEFT_BUTTON && state == GLUT_DOWN
         LButtonD = true        
         println("Left button pressed.")
-    elseif key == GLUT_LEFT_BUTTON && state == GLUT_UP
+    elseif the_key == GLUT_LEFT_BUTTON && state == GLUT_UP
         LButtonD = false
         println("Left button lifted at ($x,$y).")
-    elseif key == GLUT_RIGHT_BUTTON && state == GLUT_DOWN
+    elseif the_key == GLUT_RIGHT_BUTTON && state == GLUT_DOWN
         RButtonD = true        
         println("Right button pressed.")
-    elseif key == GLUT_RIGHT_BUTTON && state == GLUT_UP
+    elseif the_key == GLUT_RIGHT_BUTTON && state == GLUT_UP
         RButtonD = false
         println("Right button lifted at ($x,$y).")
     end

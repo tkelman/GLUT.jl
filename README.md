@@ -7,7 +7,7 @@ crash before.
 
 NOTE: Since Julia code doesn't exactly have arguments like a C program would
 have, I made a small wrapper function called glutinit(), which can be called to
-initialize  GLUT.  glutinit() wraps the original glutinit(pargc::Ptr{Int32},
+initialize GLUT.  glutinit() wraps the original glutinit(pargc::Ptr{Int32},
 argv::Ptr{Ptr{Uint8}}), so that the user doesn't have to pass dummy arguments
 to make everything work.
 
@@ -38,8 +38,8 @@ glutcreatewindow
 glutmainloop
 ```
 
-See the Examples directory for translations of the first ten NeHe tutorials
-into Julia-GLUT.
+See the Examples directory for translations of sixteen NeHe tutorials into
+Julia-GLUT.
 
 Have fun!
 

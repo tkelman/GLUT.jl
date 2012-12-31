@@ -88,9 +88,9 @@ end
 
 global window
 
-global light         = false
-global blend         = false
-global filter        = 0
+global light         = true
+global blend         = true
+global filter        = 3
 
 global xrot          = 0.0
 global yrot          = 0.0
@@ -162,6 +162,7 @@ function initGL(w::Integer,h::Integer)
     glenable(GL_TEXTURE_2D)
 
     # enable alpha blending for textures
+    glenable(GL_BLEND)
     glblendfunc(GL_SRC_ALPHA, GL_ONE)
     glcolor(1.0, 1.0, 1.0, 0.5)
 
@@ -210,13 +211,7 @@ function DrawGLScene()
     glrotate(xrot,1.0,0.0,0.0)
     glrotate(yrot,0.0,1.0,0.0)
 
-    if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex[1])
-    elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex[2])
-    elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex[3])
-    end
+    glbindtexture(GL_TEXTURE_2D,tex[filter])
     cube(cube_size)
 
     xrot +=xspeed
@@ -227,14 +222,14 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(key::Char,x::Int32,y::Int32)
+function keyPressed(the_key::Char,x::Int32,y::Int32)
     global blend
     global light
     global filter
 
-    if key == int('q')
+    if the_key == int('q')
         glutdestroywindow(window)
-    elseif key == int('b')
+    elseif the_key == int('b')
         println("Blend was: $blend")
         blend = (blend ? false : true)
         if blend
@@ -245,7 +240,7 @@ function keyPressed(key::Char,x::Int32,y::Int32)
             glenable(GL_DEPTH_TEST)
         end
         println("Blend is now: $blend")
-    elseif key == int('l')
+    elseif the_key == int('l')
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
@@ -254,11 +249,11 @@ function keyPressed(key::Char,x::Int32,y::Int32)
         else
             gldisable(GL_LIGHTING)
         end
-    elseif key == int('f')
+    elseif the_key == int('f')
         println("Filter was: $filter")
         filter += 1
-        if filter > 2
-            filter = 0
+        if filter > 3
+            filter = 1
         end
         println("Filter is now: $filter")
     end
@@ -266,22 +261,22 @@ end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
-function specialKeyPressed(key::Int32,x::Int32,y::Int32)
+function specialKeyPressed(the_key::Int32,x::Int32,y::Int32)
     global z
     global xspeed
     global yspeed
 
-    if key == GLUT_KEY_PAGE_UP
+    if the_key == GLUT_KEY_PAGE_UP
         z -= 0.02
-    elseif key == GLUT_KEY_PAGE_DOWN
+    elseif the_key == GLUT_KEY_PAGE_DOWN
         z += 0.02
-    elseif key == GLUT_KEY_UP
+    elseif the_key == GLUT_KEY_UP
         xspeed -= 0.01
-    elseif key == GLUT_KEY_DOWN
+    elseif the_key == GLUT_KEY_DOWN
         xspeed += 0.01
-    elseif key == GLUT_KEY_LEFT
+    elseif the_key == GLUT_KEY_LEFT
         yspeed -= 0.01
-    elseif key == GLUT_KEY_RIGHT
+    elseif the_key == GLUT_KEY_RIGHT
         yspeed += 0.01
     end
 

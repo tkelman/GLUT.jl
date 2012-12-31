@@ -73,15 +73,10 @@ global LightAmbient  = [0.5f0, 0.5f0, 0.5f0, 1.0f0]
 global LightDiffuse  = [1.0f0, 1.0f0, 1.0f0, 1.0f0]
 global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 
-global filter        = 0
+global filter        = 3
 global light         = true
 global blend         = false
 
-global x_m           = 0.0
-global y_m           = 0.0
-global z_m           = 0.0
-global u_m           = 0.0
-global v_m           = 0.0
 global xtrans        = 0.0
 global ytrans        = 0.0
 global ztrans        = 0.0
@@ -188,11 +183,6 @@ function DrawGLScene()
     global tex
     global numtriangles
     global sector1
-    global u_m
-    global v_m
-    global x_m
-    global y_m
-    global z_m
 
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
@@ -200,19 +190,13 @@ function DrawGLScene()
     xtrans = -xpos
     ztrans = -zpos
     ytrans = -walkbias-0.25
-    sceneroty = 360.0 - yrot
+    sceneroty = 360.0-yrot
 
     glrotate(lookupdown, 1.0, 0.0, 0.0)
     glrotate(sceneroty, 0.0, 1.0, 0.0)
     gltranslate(xtrans, ytrans, ztrans)
 
-    if filter == 0
-        glbindtexture(GL_TEXTURE_2D,tex[1])
-    elseif filter == 1
-        glbindtexture(GL_TEXTURE_2D,tex[2])
-    elseif filter == 2
-        glbindtexture(GL_TEXTURE_2D,tex[3])
-    end
+    glbindtexture(GL_TEXTURE_2D,tex[filter])
 
     for face = 1:numtriangles
         glbegin(GL_TRIANGLES)
@@ -248,14 +232,14 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(key::Char,x::Int32,y::Int32)
+function keyPressed(the_key::Char,x::Int32,y::Int32)
     global blend
     global light
     global filter
 
-    if key == int('q')
+    if the_key == int('q')
         glutdestroywindow(window)
-    elseif key == int('b')
+    elseif the_key == int('b')
         println("Blend was: $blend")
         blend = (blend ? false : true)
         if blend
@@ -266,7 +250,7 @@ function keyPressed(key::Char,x::Int32,y::Int32)
             glenable(GL_DEPTH_TEST)
         end
         println("Blend is now: $blend")
-    elseif key == int('l')
+    elseif the_key == int('l')
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
@@ -275,11 +259,11 @@ function keyPressed(key::Char,x::Int32,y::Int32)
         else
             gldisable(GL_LIGHTING)
         end
-    elseif key == int('f')
+    elseif the_key == int('f')
         println("Filter was: $filter")
         filter += 1
-        if filter > 2
-            filter = 0
+        if filter > 3
+            filter = 1
         end
         println("Filter is now: $filter")
     end
@@ -287,7 +271,7 @@ end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
-function specialKeyPressed(key::Int32,x::Int32,y::Int32)
+function specialKeyPressed(the_key::Int32,x::Int32,y::Int32)
     global lookupdown
     global xpos
     global zpos
@@ -295,38 +279,37 @@ function specialKeyPressed(key::Int32,x::Int32,y::Int32)
     global walkbiasangle
     global yrot
 
-    if key == GLUT_KEY_PAGE_UP
-        lookupdown -= 0.2
-    elseif key == GLUT_KEY_PAGE_DOWN
-        lookupdown += 1.0
-    elseif key == GLUT_KEY_UP
-        xpos -= sin(degrees2radians(yrot))*0.05
-        zpos -= cos(degrees2radians(yrot))*0.05
-        walkbias += 10
+    if the_key == GLUT_KEY_PAGE_UP
+        lookupdown -=0.2
+    elseif the_key == GLUT_KEY_PAGE_DOWN
+        lookupdown +=1.0
+    elseif the_key == GLUT_KEY_UP
+        xpos -=sin(degrees2radians(yrot))*0.05
+        zpos -=cos(degrees2radians(yrot))*0.05
+        walkbias +=10
         if walkbiasangle <= 359.0
             walkbiasangle = 0.0
         else
-            walkbiasangle += 10
+            walkbiasangle +=10
         end
         walkbias = sin(degrees2radians(walkbiasangle))/20.0
-    elseif key == GLUT_KEY_DOWN
-        xpos += sin(degrees2radians(yrot))*0.05
-        zpos += cos(degrees2radians(yrot))*0.05
-        walkbias -= 10
+    elseif the_key == GLUT_KEY_DOWN
+        xpos +=sin(degrees2radians(yrot))*0.05
+        zpos +=cos(degrees2radians(yrot))*0.05
+        walkbias -=10
         if walkbiasangle <= 1.0
             walkbiasangle = 359.0
         else
-            walkbiasangle -= 10
+            walkbiasangle -=10
         end
         walkbias = sin(degrees2radians(walkbiasangle))/20.0
-    elseif key == GLUT_KEY_LEFT
-        yrot += 1.5
-    elseif key == GLUT_KEY_RIGHT
-        yrot -= 1.5
+    elseif the_key == GLUT_KEY_LEFT
+        yrot +=1.5
+    elseif the_key == GLUT_KEY_RIGHT
+        yrot -=1.5
     end
 
-
-    return nothing # specialKeyPressed returns "void" in C. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
+    return nothing # specialKeyPressed returns "void" in C-GLUT. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
 end
 
 _specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))

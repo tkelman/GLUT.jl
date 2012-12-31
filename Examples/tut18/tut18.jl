@@ -1,6 +1,6 @@
-# Thu 08 Nov 2012 05:07:44 PM EST
+# Mon 31 Dec 2012 01:41:19 PM EST
 #
-# NeHe Tut 7 - Implement lights and rotate a textured cube
+# NeHe Tut 18 - Implement lights and rotate a textured cube
 
 
 # load necessary GLUT/GLU/OpenGL routines
@@ -89,7 +89,7 @@ end
 global window
 
 global filter        = 3
-global light         = true
+global light         = false
 
 global xrot          = 0.0
 global yrot          = 0.0
@@ -114,7 +114,7 @@ global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut7/crate.bmp"))
+    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut18/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description
@@ -220,13 +220,13 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(the_key::Char,x::Int32,y::Int32)
+function keyPressed(key::Char,x::Int32,y::Int32)
     global filter
     global light
 
-    if the_key == int('q')
+    if key == int('q')
         glutdestroywindow(window)
-    elseif the_key == int('l')
+    elseif key == int('l')
         println("Light was: $light")
         light = (light ? false : true)
         println("Light is now: $light")
@@ -235,7 +235,7 @@ function keyPressed(the_key::Char,x::Int32,y::Int32)
         else
             gldisable(GL_LIGHTING)
         end
-    elseif the_key == int('f')
+    elseif key == int('f')
         println("Filter was: $filter")
         filter += 1
         if filter > 3
@@ -247,22 +247,22 @@ end
 
 _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
-function specialKeyPressed(the_key::Int32,x::Int32,y::Int32)
+function specialKeyPressed(key::Int32,x::Int32,y::Int32)
     global z
     global xspeed
     global yspeed
 
-    if the_key == GLUT_KEY_PAGE_UP
+    if key == GLUT_KEY_PAGE_UP
         z -= 0.02
-    elseif the_key == GLUT_KEY_PAGE_DOWN
+    elseif key == GLUT_KEY_PAGE_DOWN
         z += 0.02
-    elseif the_key == GLUT_KEY_UP
+    elseif key == GLUT_KEY_UP
         xspeed -= 0.01
-    elseif the_key == GLUT_KEY_DOWN
+    elseif key == GLUT_KEY_DOWN
         xspeed += 0.01
-    elseif the_key == GLUT_KEY_LEFT
+    elseif key == GLUT_KEY_LEFT
         yspeed -= 0.01
-    elseif the_key == GLUT_KEY_RIGHT
+    elseif key == GLUT_KEY_RIGHT
         yspeed += 0.01
     end
 
@@ -278,7 +278,7 @@ glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 7")
+window = glutcreatewindow("NeHe Tut 18")
 
 glutdisplayfunc(_DrawGLScene)
 glutfullscreen()

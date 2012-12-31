@@ -12,7 +12,7 @@ using GLUT
 
 global window
 
-width = 640
+width  = 640
 height = 480
 
 # function to init OpenGL context
@@ -80,8 +80,8 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(key::Char,x::Int32,y::Int32)
-    if key == int('q')
+function keyPressed(the_key::Char,x::Int32,y::Int32)
+    if the_key == int('q')
         glutdestroywindow(window)
     end
 end

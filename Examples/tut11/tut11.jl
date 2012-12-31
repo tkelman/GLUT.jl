@@ -1,6 +1,6 @@
-# Thu 08 Nov 2012 05:07:44 PM EST
+# Mon 31 Dec 2012 01:38:23 PM EST
 #
-# NeHe Tut 6 - Rotate a textured cube
+# NeHe Tut 11 - Waving texture
 
 
 # load necessary GLUT/GLU/OpenGL routines
@@ -10,95 +10,37 @@ load("image")
 require("GLUT")
 using GLUT
 
-### auxiliary functions
-
-function cube(size)
-  glbegin(GL_QUADS)
-    # Front Face
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, -size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, -size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, size)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, size)
-
-    # Back Face
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, -size)
-
-    # Top Face
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(size, size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, -size)
-
-    # Bottom Face
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, -size, -size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, size)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, size)
-
-    # Right Face
-    gltexcoord(1.0, 0.0)
-    glvertex(size, -size, -size)
-    gltexcoord(1.0, 1.0)
-    glvertex(size, size, -size)
-    gltexcoord(0.0, 1.0)
-    glvertex(size, size, size)
-    gltexcoord(0.0, 0.0)
-    glvertex(size, -size, size)
-
-    # Left Face
-    gltexcoord(0.0, 0.0)
-    glvertex(-size, -size, -size)
-    gltexcoord(1.0, 0.0)
-    glvertex(-size, -size, size)
-    gltexcoord(1.0, 1.0)
-    glvertex(-size, size, size)
-    gltexcoord(0.0, 1.0)
-    glvertex(-size, size, -size)
-  glend()
-end
-
-### end of auxiliary functions
-
 # initialize variables
 
 global window
 
-global xrot      = 0.0
-global yrot      = 0.0
-global zrot      = 0.0
+global xrot   = 0.0
+global yrot   = 0.0
+global zrot   = 0.0
 
-global tex       = Array(Uint32,1) # generating 1 texture
+global tex    = Array(Uint32,1) # generating 1 texture
 
-global cube_size = 1.0
+global points = Array(Float64,(45,45,3))
 
-width            = 640
-height           = 480
+for x=1:45
+    for y=1:45
+        points[x,y,1] = x/5-4.5
+        points[x,y,2] = y/5-4.5
+        points[x,y,3] = sin((((x/5)*40)/360)*2*pi)
+    end
+end
+
+wiggle_count = 0
+
+width        = 640
+height       = 480
 
 # load textures from images
 
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut6/NeHe.bmp"))
+    img3D = imread(path_expand("/home/rje/my_docs/julia/GLUT.jl/Examples/tut11/tim.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description
@@ -117,9 +59,15 @@ function initGL(w::Integer,h::Integer)
     LoadGLTextures()
     glclearcolor(0.0, 0.0, 0.0, 0.0)
     glcleardepth(1.0)			 
-    gldepthfunc(GL_LESS)	 
+    gldepthfunc(GL_LEQUAL)	 
     glenable(GL_DEPTH_TEST)
     glshademodel(GL_SMOOTH)
+    glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+
+    # enable Polygon filling
+
+    glpolygonmode(GL_BACK, GL_FILL)
+    glpolygonmode(GL_FRONT, GL_LINE)
 
     # enable texture mapping
     glenable(GL_TEXTURE_2D)
@@ -156,21 +104,55 @@ function DrawGLScene()
     global xrot
     global yrot
     global zrot
-
+    global points
+    global wiggle_count
+    
     glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glloadidentity()
 
-    gltranslate(0.0, 0.0, -5.0)
+    gltranslate(0.0, 0.0, -12.0)
 
     glrotate(xrot,1.0,0.0,0.0)
     glrotate(yrot,0.0,1.0,0.0)
     glrotate(zrot,0.0,0.0,1.0)
 
     glbindtexture(GL_TEXTURE_2D,tex[1])
-    cube(cube_size)
 
-    xrot +=0.2
-    yrot +=0.3
+    glbegin(GL_QUADS)
+        for x=1:44
+            for y=1:44
+                tex_x  = x/45
+                tex_y  = y/45
+                tex_xb = (x+1)/45
+                tex_yb = (y+1)/45
+
+                gltexcoord(tex_x, tex_y)
+                glvertex(points[x,y,1],points[x,y,2],points[x,y,3])
+                gltexcoord(tex_x, tex_yb)
+                glvertex(points[x,y+1,1],points[x,y+1,2],points[x,y+1,3])
+                gltexcoord(tex_xb, tex_yb)
+                glvertex(points[x+1,y+1,1],points[x+1,y+1,2],points[x+1,y+1,3])
+                gltexcoord(tex_xb, tex_y)
+                glvertex(points[x+1,y,1],points[x+1,y,2],points[x+1,y,3])
+            end
+        end
+    glend()
+
+    if wiggle_count == 2
+        for y=1:45
+            hold = points[1,y,3]
+            for x=1:44
+                points[x,y,3] = points[x+1,y,3]
+            end
+            points[45,y,3] = hold
+        end
+        wiggle_count = 0
+    end
+
+    wiggle_count +=1
+
+    xrot +=0.3
+    yrot +=0.2
     zrot +=0.4
 
     glutswapbuffers()
@@ -193,7 +175,7 @@ glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutinitwindowsize(width, height)
 glutinitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 6")
+window = glutcreatewindow("NeHe Tut 11")
 
 glutdisplayfunc(_DrawGLScene)
 glutfullscreen()

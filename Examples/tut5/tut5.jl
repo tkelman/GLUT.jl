@@ -18,8 +18,8 @@ global rquad     = 0.0
 global pyr_size  = 1.0
 global cube_size = 1.0
 
-width        = 640
-height       = 480
+width            = 640
+height           = 480
 
 # function to init OpenGL context
 
@@ -160,8 +160,8 @@ end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(key::Char,x::Int32,y::Int32)
-    if key == int('q')
+function keyPressed(the_key::Char,x::Int32,y::Int32)
+    if the_key == int('q')
         glutdestroywindow(window)
     end
 end

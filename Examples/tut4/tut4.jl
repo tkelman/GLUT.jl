@@ -89,16 +89,16 @@ function DrawGLScene()
         glvertex(-1.0,-1.0,0.0)
     glend()
 
-    rtri  += 0.2
-    rquad -= 0.2
+    rtri  +=0.2
+    rquad -=0.2
 
     glutswapbuffers()
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
-function keyPressed(key::Char,x::Int32,y::Int32)
-    if key == int('q')
+function keyPressed(the_key::Char,x::Int32,y::Int32)
+    if the_key == int('q')
         glutdestroywindow(window)
     end
 end

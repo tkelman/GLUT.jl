@@ -38,7 +38,7 @@ glutcreatewindow
 glutmainloop
 ```
 
-See the Examples directory for translations of sixteen NeHe tutorials into
+See the Examples/NeHe directory for translations of sixteen NeHe tutorials into
 Julia-GLUT.
 
 Have fun!

@@ -12,7 +12,7 @@ initialize GLUT.  glutinit() wraps the original glutinit(pargc::Ptr{Int32},
 argv::Ptr{Ptr{Uint8}}), so that the user doesn't have to pass dummy arguments
 to make everything work.
 
-Many of the commonly used GLUT functions are working, but many of the less
+Many of the commonly used GLUT functions are working, but most of the less
 commonly used functions are still not fully implemented. (You can edit the
 method signatures by hand, but it is a painful process.  [Jasper's
 FFI](https://github.com/o-jasper/julia-ffi.git) will soon handle this

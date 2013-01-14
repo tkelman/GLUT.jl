@@ -105,7 +105,7 @@ height           = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut17/NeHe.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/NeHe/tut17/NeHe.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

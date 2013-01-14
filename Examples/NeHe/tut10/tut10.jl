@@ -95,14 +95,14 @@ height               = 480
 
 # initialize sector1 with SetupWorld
 
-sector1 = SetupWorld(expanduser("~/.julia/GLUT/Examples/tut10/world.txt"))
+sector1 = SetupWorld(expanduser("~/.julia/GLUT/Examples/NeHe/tut10/world.txt"))
 
 # load textures from images
 
 function LoadGLTextures()
     global tex
 
-    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut10/mud.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/NeHe/tut10/mud.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

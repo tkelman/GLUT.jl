@@ -1,13 +1,19 @@
 # Mon 31 Dec 2012 01:39:42 PM EST
 #
-# NeHe Tut 16 - Implement lights and rotate a textured cube
+# NeHe Tut 16 - Implement fog (builds on tut7)
+#
+# Q - quit
+# G - change fog filter (liner, exponential, exponential-squared)
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - move camera closer/further away
+# Up/Down - increase/decrease x-rotation speed
+# Left/Right - increase/decrease y-rotation speed
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 ### auxiliary functions
@@ -118,7 +124,7 @@ global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/my_docs/julia/GLUT.jl/Examples/tut16/crate.bmp"))
+    img3D = imread(expanduser("~/my_docs/julia/GLUT.jl/Examples/tut16/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

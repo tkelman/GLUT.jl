@@ -1,13 +1,21 @@
 # Mon 31 Dec 2012 01:41:39 PM EST
 #
 # NeHe Tut 19 - Make some colored stars and play w/ alpha blending a bit more
+#
+# Q - quit
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - move camera closer/further away
+# Up/Down - increase/decrease x-rotation speed
+# Left/Right - increase/decrease y-rotation speed
+# Home/End - increase/decrease the amount of "friction" on particles
+# Enter - turn rainbow effect on/off
+# Space - step through colors for rainbow effect
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 # initialize variables
@@ -100,7 +108,7 @@ for loop = 2:MAX_PARTICLES
     xGrav  = 0.0                  
     yGrav  = -0.8                 
     zGrav  = 0.0
-    particles = push(particles, particle(active,life,fade,red,green,blue,xPos,yPos,zPos,xSpeed,ySpeed,zSpeed,xGrav,yGrav,zGrav))
+    particles = push!(particles, particle(active,life,fade,red,green,blue,xPos,yPos,zPos,xSpeed,ySpeed,zSpeed,xGrav,yGrav,zGrav))
 end
 
 # load textures from images
@@ -108,7 +116,7 @@ end
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/my_docs/julia/GLUT.jl/Examples/tut19/Particle.bmp"))
+    img3D = imread(expanduser("~/my_docs/julia/GLUT.jl/Examples/tut19/Particle.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

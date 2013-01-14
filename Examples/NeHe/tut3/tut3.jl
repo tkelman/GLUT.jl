@@ -1,11 +1,12 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
 # NeHe Tut 3 - Draw a colored (rainbow) triangle and a colored (blue) square
+#
+# Q - quit
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines
 
-require("GLUT")
 using GLUT
 
 # intialize variables

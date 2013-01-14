@@ -1,13 +1,18 @@
 # Thu 08 Nov 2012 05:07:44 PM EST
 #
 # NeHe Tut 7 - Implement lights and rotate a textured cube
+#
+# Q - quit
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - move camera closer/further away from cube
+# Left/Right - increase/decrease y-rotation speed
+# Up/Down - increase/decrease x-rotation speed
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 ### auxiliary functions
@@ -114,7 +119,7 @@ global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut7/crate.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut7/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

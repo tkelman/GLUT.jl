@@ -1,13 +1,19 @@
 # Tue 13 Nov 2012 04:13:36 PM EST 
 #
 # NeHe Tut 8 - Implement lights and rotate an alpha-blended, textured cube
+#
+# Q - quit
+# B - turn texture alpha-blending on/off
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - move camera closer/further away from cube
+# Up/Down - increase/decrease x-rotation speed
+# Left/Right - increase/decrease y-rotation speed
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 ### auxiliary functions
@@ -115,7 +121,7 @@ global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut8/glass.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut8/glass.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

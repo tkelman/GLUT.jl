@@ -11,13 +11,30 @@ initialize GLUT.  glutinit() wraps the original glutinit(pargc::Ptr{Int32},
 argv::Ptr{Ptr{Uint8}}), so that the user doesn't have to pass dummy arguments
 to make everything work.
 
-Many GLUT functions are working, but many of the less commonly used functions
-are still not fully implemented. (You can edit the method signatures by hand,
-but it is a painful process.  Jasper's FFI
+Many of the commonly used GLUT functions are working, but many of the less
+commonly used functions are still not fully implemented. (You can edit the
+method signatures by hand, but it is a painful process.  Jasper's FFI
 (https://github.com/o-jasper/julia-ffi.git) will soon handle this
 automatically!)
 
+#Installation
+
+```julia
+Pkg.add("GLUT")
+```
+
+You will also need to install the GLUT libraries for your system. (Odds are
+that they are already installed.)
+
+NOTE: If you are on Linux, it is recommended that you use the proprietary
+drivers for your graphics card.  Open-source drivers produce poor performance
+and have caused X11 to crash before.  Mac and Windows users should be fine.
+However, I don't believe this package has been tested on either of those
+operating systems.
+
 #Usage notes
+
+Press 'q' in any of the NeHe examples to quit.
 
 PLEASE NOTE: When used in a Julia file, all of the function names are written in
 lowercase. For example:
@@ -39,14 +56,45 @@ glutmainloop
 ```
 
 See the Examples/NeHe directory for translations of sixteen NeHe tutorials into
-Julia-GLUT.
+Julia-GLUT. Controls are listed in the opening comments of each example.
+
+Mouse and joystick versions of tutorial 7 can be found in the Examples/NeHe
+directory.  The joystick version is currently untested.
+
+(At the moment, NeHe tutorial 17 will run, but produces a glicthy output.  I've
+yet to figure that out.  It may be a while before I return to it, since fonts
+in 3D applications aren't terribly interesting to me.)
+
+Some usage quirks:
+
+- You must use glutdestroywindow() to quit a Julia-GLUT instance (press 'q' in
+any of the NeHe examples to quit), just like you would in C-GLUT code.  Trying
+to 'break' out of the GLUT main loop does not work.  glutdestroywindow() will
+close your current Julia REPL session.
 
 Have fun!
 
 #Caveats
 
 At the moment, GLUT callbacks communicate with each other through globals,
-which can make for very messy code. There must be a better way to do this.
+which can make for very messy code, so I suggest that you use the SDL.jl
+package, if you can. There must be a better way to have callbacks communicate
+with each other.
+
+#Loading and using images as textures
+
+1. Load the image using imread from Julia's image.jl file. (You will need to
+	 require("image") before imread will be available in the Main namespace.)
+2. Pass the image array into glimg (automatically exported when
+	 require("OpenGL") is evaluated). OpenGL expects upside-down, 1D image arrays
+	 in an RGB format and glimg performs the necessary conversion on the 3D image
+	 arrays produced by imread.
+3. Initialize an empty array of Uint32's to contain texture identifiers.  For
+	 example, an Array(Uint32,3) should be created if you want to make three
+	 different textures.
+4. Continue with the typical OpenGL image/texture process.
+5. See Examples 6 or greater in the Examples/NeHe directory for the relevant
+	 code.
 
 #Credit
 

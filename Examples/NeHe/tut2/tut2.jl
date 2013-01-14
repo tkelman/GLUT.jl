@@ -1,11 +1,12 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
 # NeHe Tut 2 - Draw a triangle and a square
+#
+# Q - quit
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines
 
-require("GLUT")
 using GLUT
 
 # intialize variables

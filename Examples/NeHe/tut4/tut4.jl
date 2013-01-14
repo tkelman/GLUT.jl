@@ -1,11 +1,12 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
 # NeHe Tut 4 - Rotate colored (rainbow) triangle and colored (cyan) square
+#
+# Q - quit
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines
 
-require("GLUT")
 using GLUT
 
 # initialize variables

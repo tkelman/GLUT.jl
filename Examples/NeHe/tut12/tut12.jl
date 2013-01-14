@@ -1,13 +1,15 @@
 # Mon 31 Dec 2012 01:39:13 PM EST
 #
 # NeHe Tut 12 - Rotate a textured cube
+#
+# Q - quit
+# Up/Down - increase/decrease rotation of each cube about it's own x-axis
+# Left/Right - increase/decrease rotation of each cube about it's own y-axis
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 # initialize variables
@@ -42,7 +44,7 @@ height      = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("/home/rje/my_docs/julia/GLUT.jl/Examples/tut12/cube.bmp"))
+    img3D = imread(expanduser("/home/rje/my_docs/julia/GLUT.jl/Examples/tut12/cube.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

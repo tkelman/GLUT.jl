@@ -1,11 +1,12 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
 # NeHe Tut 5 - Rotate colored (rainbow) pyramid and colored (rainbow) cube
+#
+# Q - quit
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines
 
-require("GLUT")
 using GLUT
 
 # initialize variables

@@ -1,13 +1,16 @@
 # Tue 13 Nov 2012 04:13:36 PM EST 
 #
 # NeHe Tut 9 - Make some colored stars and play w/ alpha blending a bit more
+#
+# Q - quit
+# T - turn "twinkle" on/off
+# PageUp/Down - move camera closer/further away
+# Up/Down - increase/decrease tilt about x-axis
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 # initialize variables
@@ -34,7 +37,7 @@ for loop = 1:STAR_NUM-1
     tempr = randi(256)
     tempg = randi(256)
     tempb = randi(256)
-    stars = push(stars,star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
+    stars = push!(stars,star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
 end
 
 global window
@@ -55,7 +58,7 @@ height         = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut9/Star.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut9/Star.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

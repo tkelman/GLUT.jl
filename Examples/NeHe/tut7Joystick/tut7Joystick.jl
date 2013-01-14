@@ -1,13 +1,19 @@
 # Thu 08 Nov 2012 05:07:44 PM EST
 #
 # NeHe Tut 7 Mouse - Implement lights and rotate a textured cube with a joystick
+#
+# Q - quit
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# Hold joystick button A and move mouse up/down or /left/right - increase/decrease x-rotation speed or y-rotation speed
+# Hold joystick button B and move mouse up/down - move camera closer/further away from cube
+
+# TODO: Joystick functionality is currently untested.
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 ### auxiliary functions
@@ -122,7 +128,7 @@ global RButtonD      = false
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut7Mouse/crate.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut7Mouse/crate.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

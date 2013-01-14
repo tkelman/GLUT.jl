@@ -1,11 +1,12 @@
 # Tue 23 Oct 2012 07:10:59 PM EDT
 #
 # NeHe Tut 1 - Open a window
+#
+# Q - quit
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines
 
-require("GLUT")
 using GLUT
 
 # intialize variables

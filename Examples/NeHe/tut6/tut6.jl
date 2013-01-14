@@ -1,13 +1,13 @@
 # Thu 08 Nov 2012 05:07:44 PM EST
 #
 # NeHe Tut 6 - Rotate a textured cube
+#
+# Q - quit
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 ### auxiliary functions
@@ -98,7 +98,7 @@ height           = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut6/NeHe.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut6/NeHe.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

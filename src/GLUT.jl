@@ -1,8 +1,6 @@
-require("OpenGL")
+using OpenGL
 require("OpenGL/src/OpenGLAux")
 require("OpenGL/src/GLU")
-require("GetC")
-using OpenGL
 using OpenGLAux
 using GLU
 

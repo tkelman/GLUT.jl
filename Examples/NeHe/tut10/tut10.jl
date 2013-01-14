@@ -1,13 +1,19 @@
 # Tue 13 Nov 2012 04:13:36 PM EST 
 #
 # NeHe Tut 10 - Move around in a 3D world
+#
+# Q - quit
+# B - turn texture alpha-blending on/off
+# L - turn lights on/off
+# F - change texture filter (linear, nearest, mipmap)
+# PageUp/Down - look up/down
+# Up/Down - move forward/backward
+# Left/Right - turn left/right
 
 
-# load necessary GLUT/GLU/OpenGL routines
+# load necessary GLUT/OpenGL routines and image routines for loading textures
 
-load("image")
-
-require("GLUT")
+require("image")
 using GLUT
 
 ### auxiliary functions
@@ -89,14 +95,14 @@ height               = 480
 
 # initialize sector1 with SetupWorld
 
-sector1 = SetupWorld(path_expand("~/.julia/GLUT/Examples/tut10/world.txt"))
+sector1 = SetupWorld(expanduser("~/.julia/GLUT/Examples/tut10/world.txt"))
 
 # load textures from images
 
 function LoadGLTextures()
     global tex
 
-    img3D = imread(path_expand("~/.julia/GLUT/Examples/tut10/mud.bmp"))
+    img3D = imread(expanduser("~/.julia/GLUT/Examples/tut10/mud.bmp"))
     w     = size(img3D,2)
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description

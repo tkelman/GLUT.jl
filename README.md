@@ -33,7 +33,9 @@ On Fedora, install the following:
 
 The internet and the freeGLUT website seem to have instructions for Windows and
 Mac OS X, which (as always) have a more detailed (and frustrating) install
-process.
+process.  I suppose [Homebrew](http://mxcl.github.com/homebrew/) (the
+recommended choice from what I hear) or [MacPorts](https://www.macports.org)
+will be helpful for Mac users.
 
 NOTE: If you are on Linux, it is recommended that you use the proprietary
 drivers for your graphics card.  Open-source drivers produce poor performance

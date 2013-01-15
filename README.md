@@ -2,10 +2,6 @@ This package is intended to be a fully fledged
 [Julia](http://www.julialang.org) interface to the GLUT implementation on your
 machine.
 
-NOTE: It is recommended that you use the proprietary drivers for your graphics
-card.  Open-source drivers produce poor performance and have caused X11 to
-crash before.
-
 NOTE: Since Julia code doesn't exactly have arguments like a C program would
 have, I made a small wrapper function called glutinit(), which can be called to
 initialize GLUT.  glutinit() wraps the original glutinit(pargc::Ptr{Int32},
@@ -25,8 +21,19 @@ Pkg.add("GLUT")
 ```
 
 You will also need to install the [GLUT
-libraries](http://freeglut.sourceforge.net) for your system. (For Linux users,
-odds are that they are already installed.)
+libraries](http://freeglut.sourceforge.net) for your system.
+
+On Ubuntu, install the following:
+
+	freeglut3-dev
+
+On Fedora, install the following:
+
+	freeglut
+
+The internet and the freeGLUT website seem to have instructions for Windows and
+Mac OS X, which (as always) have a more detailed (and frustrating) install
+process.
 
 NOTE: If you are on Linux, it is recommended that you use the proprietary
 drivers for your graphics card.  Open-source drivers produce poor performance
@@ -73,7 +80,7 @@ To try a NeHe example (e.g. tutorial 2), do
 require("GLUT/Examples/NeHe/tut2/tut2.jl")
 ```
 
-##Some usage quirks:
+###Some usage quirks:
 
 - You must use glutdestroywindow() to quit a Julia-GLUT instance (press 'q' in
 any of the NeHe examples to quit), just like you would in C-GLUT code.  Trying

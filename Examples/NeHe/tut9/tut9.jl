@@ -18,9 +18,9 @@ using GLUT
 STAR_NUM = 50
 
 type star
-    r::Int64
-    g::Int64
-    b::Int64
+    r::Int
+    g::Int
+    b::Int
     dist::Float64
     angle::Float64
 end

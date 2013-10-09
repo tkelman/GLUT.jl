@@ -3,8 +3,8 @@ This package is intended to be a fully fledged
 machine.
 
 NOTE: Since Julia code doesn't exactly have arguments like a C program would
-have, I made a small wrapper function called glutinit(), which can be called to
-initialize GLUT.  glutinit() wraps the original glutinit(pargc::Ptr{Int32},
+have, I made a small wrapper function called glutInit(), which can be called to
+initialize GLUT.  glutInit() wraps the original glutInit(pargc::Ptr{Int32},
 argv::Ptr{Ptr{Uint8}}), so that the user doesn't have to pass dummy arguments
 to make everything work.
 
@@ -37,34 +37,9 @@ process.  I suppose [Homebrew](http://mxcl.github.com/homebrew/) (the
 recommended choice from what I hear) or [MacPorts](https://www.macports.org)
 will be helpful for Mac users.
 
-NOTE: If you are on Linux, it is recommended that you use the proprietary
-drivers for your graphics card.  Open-source drivers produce poor performance
-and have caused X11 to crash before.  Mac and Windows users should be fine.
-However, I don't believe this package has been tested on either of those
-operating systems.
-
 #Usage notes
 
 Press 'q' in any of the NeHe examples to quit.
-
-PLEASE NOTE: When used in a Julia file, all of the function names are written in
-lowercase. For example:
-
-In C-GLUT code, one would write,
-
-```c
-glutInit
-glutCreateWindow
-glutMainLoop
-```
-
-In Julia-GLUT code, one would write:
-
-```julia
-glutinit
-glutcreatewindow
-glutmainloop
-```
 
 See the Examples/NeHe directory for translations of sixteen NeHe tutorials into
 Julia-GLUT. Controls are listed in the opening comments of each example.
@@ -84,9 +59,9 @@ require("GLUT/Examples/NeHe/tut2/tut2.jl")
 
 ###Some usage quirks:
 
-- You must use glutdestroywindow() to quit a Julia-GLUT instance (press 'q' in
+- You must use glutDestroyWindow() to quit a Julia-GLUT instance (press 'q' in
 any of the NeHe examples to quit), just like you would in C-GLUT code.  Trying
-to 'break' out of the GLUT main loop does not work.  glutdestroywindow() will
+to 'break' out of the GLUT main loop does not work.  glutDestroyWindow() will
 close your current Julia REPL session.
 
 #Loading and using images as OpenGL textures
@@ -94,17 +69,9 @@ close your current Julia REPL session.
 NOTE: Examples with images will not work unless you have ImageMagick installed on
 your system, since imread depends on it.
 
-1. Load the image using imread from Julia's image.jl file. (You will need to
-	 require("image") before imread will be available in the Main namespace.)
-2. Pass the image array into glimg (automatically exported when "using OpenGL"
-	 is evaluated). OpenGL expects upside-down, 1D image arrays in an RGB format
-	 and glimg performs the necessary conversion on the 3D image arrays produced
-	 by imread.
-3. Initialize an empty array of Uint32's to contain texture identifiers.  For
-	 example, an Array(Uint32,3) should be created if you want to make three
-	 different textures.
-4. Continue with the typical OpenGL image/texture process.
-5. See Examples 6 or greater in the Examples/NeHe directory for the relevant
+1. Load the image using glimread.  This is a wrapper around imread for Tim Holy's Images.jl package.  It parses the Image data returned by imread into a format that OpenGL prefers.
+2. Continue with the typical OpenGL image/texture process.
+3. See Examples 6 or greater in the Examples/NeHe directory for the relevant
 	 code.
 
 #Caveats

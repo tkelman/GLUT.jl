@@ -13,9 +13,10 @@
 # Space - step through colors for rainbow effect
 
 
-# load necessary GLUT/OpenGL routines and image routines for loading textures
+# load necessary GLUT/OpenGL routines
 
-require("image")
+global OpenGLver="1.0"
+using OpenGL
 using GLUT
 
 # initialize variables
@@ -78,16 +79,16 @@ end
 
 global particles = [particle(true,            # Julia doesn't like it when you try to initialize an empty array of
                       1.0,                    # a composite type and try to fill it afterwards, so we             
-                      randi(100)/1000+0.003,  # start with a 1-element vector and tack on values                  
+                      rand(1:100)/1000+0.003,  # start with a 1-element vector and tack on values                  
                       colors[1,1],
                       colors[1,2],
                       colors[1,3],
                       0.0,
                       0.0,
                       0.0,
-                      (randi(50)-26.0)*10.0,
-                      (randi(50)-26.0)*10.0,
-                      (randi(50)-26.0)*10.0,
+                      (rand(1:50)-26.0)*10.0,
+                      (rand(1:50)-26.0)*10.0,
+                      (rand(1:50)-26.0)*10.0,
                       0.0,
                       -0.8,
                       0.0)]
@@ -95,16 +96,16 @@ global particles = [particle(true,            # Julia doesn't like it when you t
 for loop = 2:MAX_PARTICLES
     active = true
     life   = 1.0                              
-    fade   = randi(100)/1000+0.003
+    fade   = rand(1:100)/1000+0.003
     red    = colors[loop%size(colors,1)+1,1]
     green  = colors[loop%size(colors,1)+1,2]
     blue   = colors[loop%size(colors,1)+1,3]
     xPos   = 0.0
     yPos   = 0.0            
     zPos   = 0.0            
-    xSpeed = (randi(50)-26.0)*10.0
-    ySpeed = (randi(50)-26.0)*10.0            
-    zSpeed = (randi(50)-26.0)*10.0
+    xSpeed = (rand(1:50)-26.0)*10.0
+    ySpeed = (rand(1:50)-26.0)*10.0
+    zSpeed = (rand(1:50)-26.0)*10.0
     xGrav  = 0.0                  
     yGrav  = -0.8                 
     zGrav  = 0.0
@@ -116,16 +117,13 @@ end
 function LoadGLTextures()
     global tex
 
-    img3D = imread(expanduser("~/.julia/GLUT/Examples/NeHe/tut19/Particle.bmp"))
-    w     = size(img3D,2)
-    h     = size(img3D,1)
-    img   = glimg(img3D) # see OpenGLAux.jl for description
+    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut19/Particle.bmp"))
 
     glGenTextures(1,tex)
     glBindTexture(GL_TEXTURE_2D,tex[1])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
@@ -133,7 +131,7 @@ end
 function initGL(w::Integer,h::Integer)
     global tex
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
     LoadGLTextures()
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0)			 
@@ -165,7 +163,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -173,6 +171,8 @@ function ReSizeGLScene(w::Int32,h::Int32)
     gluPerspective(45.0,w/h,0.1,100.0)
 
     glMatrixMode(GL_MODELVIEW)
+   
+    return nothing
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -219,13 +219,13 @@ function DrawGLScene()
             particles[loop].life   -= particles[loop].fade
             if particles[loop].life < 0.0
                 particles[loop].life   = 1.0
-                particles[loop].fade   = (randi(100))/1000+0.003
+                particles[loop].fade   = (rand(1:100))/1000+0.003
                 particles[loop].xPos   = 0.0
                 particles[loop].yPos   = 0.0
                 particles[loop].zPos   = 0.0
-                particles[loop].xSpeed = xspeed+randi(60)-32.0
-                particles[loop].ySpeed = yspeed+randi(60)-30.0
-                particles[loop].zSpeed = randi(60)-30.0
+                particles[loop].xSpeed = xspeed+rand(1:60)-32.0
+                particles[loop].ySpeed = yspeed+rand(1:60)-30.0
+                particles[loop].zSpeed = rand(1:60)-30.0
                 particles[loop].red    = colors[color,1]
                 particles[loop].green  = colors[color,2]
                 particles[loop].blue   = colors[color,3]
@@ -246,9 +246,9 @@ function DrawGLScene()
                 particles[loop].xPos   = 0.0
                 particles[loop].yPos   = 0.0
                 particles[loop].zPos   = 0.0
-                particles[loop].xSpeed = (randi(52)-26.0)*10
-                particles[loop].ySpeed = (randi(50)-25.0)*10
-                particles[loop].zSpeed = (randi(50)-25.0)*10
+                particles[loop].xSpeed = (rand(1:52)-26.0)*10
+                particles[loop].ySpeed = (rand(1:50)-25.0)*10
+                particles[loop].zSpeed = (rand(1:50)-25.0)*10
                 keystate[5] = false
             end
         end
@@ -257,6 +257,8 @@ function DrawGLScene()
     delay +=1
 
     glutSwapBuffers()
+   
+    return nothing
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())

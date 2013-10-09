@@ -7,6 +7,8 @@
 
 # load necessary GLUT/OpenGL routines
 
+global OpenGLver="1.0"
+using OpenGL
 using GLUT
 
 # intialize variables
@@ -19,7 +21,7 @@ height = 480
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0)			 
     glDepthFunc(GL_LESS)	 
@@ -41,7 +43,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -49,6 +51,8 @@ function ReSizeGLScene(w::Int32,h::Int32)
     gluPerspective(45.0,w/h,0.1,100.0)
 
     glMatrixMode(GL_MODELVIEW)
+    
+    return nothing
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -58,6 +62,8 @@ function DrawGLScene()
     glLoadIdentity()
 
     glutSwapBuffers()
+    
+    return nothing
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())

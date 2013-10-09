@@ -5,9 +5,10 @@
 # Q - quit
 
 
-# load necessary GLUT/OpenGL routines and image routines for loading textures
+# load necessary GLUT/OpenGL routines
 
-require("image")
+global OpenGLver="1.0"
+using OpenGL
 using GLUT
 
 ### auxiliary functions
@@ -98,22 +99,19 @@ height           = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(expanduser("~/.julia/GLUT/Examples/NeHe/tut6/NeHe.bmp"))
-    w     = size(img3D,2)
-    h     = size(img3D,1)
-    img   = glimg(img3D) # see OpenGLAux.jl for description
+    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut6/NeHe.bmp"))
 
     glGenTextures(1,tex)
     glBindTexture(GL_TEXTURE_2D,tex[1])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
     LoadGLTextures()
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0)			 
@@ -139,7 +137,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -147,6 +145,8 @@ function ReSizeGLScene(w::Int32,h::Int32)
     gluPerspective(45.0,w/h,0.1,100.0)
 
     glMatrixMode(GL_MODELVIEW)
+   
+    return nothing
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -174,6 +174,8 @@ function DrawGLScene()
     zrot +=0.4
 
     glutSwapBuffers()
+   
+    return nothing
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())

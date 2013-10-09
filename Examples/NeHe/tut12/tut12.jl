@@ -7,9 +7,10 @@
 # Left/Right - increase/decrease rotation of each cube about it's own y-axis
 
 
-# load necessary GLUT/OpenGL routines and image routines for loading textures
+# load necessary GLUT/OpenGL routines
 
-require("image")
+global OpenGLver="1.0"
+using OpenGL
 using GLUT
 
 # initialize variables
@@ -44,17 +45,14 @@ height      = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(expanduser("~/.julia/GLUT/Examples/NeHe/tut12/cube.bmp"))
-    w     = size(img3D,2)
-    h     = size(img3D,1)
-    img   = glimg(img3D) # see OpenGLAux.jl for description
+    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut12/cube.bmp"))
 
     glGenTextures(1,tex)
     glBindTexture(GL_TEXTURE_2D,tex[1])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
-    gluBuild2dMipMaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
@@ -63,7 +61,7 @@ function initGL(w::Integer,h::Integer)
     global box
     global top
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
     LoadGLTextures()
     glClearColor(0.0, 0.0, 0.0, 0.5)
     glClearDepth(1.0)			 
@@ -89,9 +87,9 @@ function initGL(w::Integer,h::Integer)
 
     # build the display lists
 
-    box = glgenlists(2)
+    box = glGenLists(2)
 
-    glnewlist(box, GL_COMPILE)
+    glNewList(box, GL_COMPILE)
         glBegin(GL_QUADS)
             # Bottom Face
             glTexCoord(0.0, 1.0)
@@ -143,11 +141,11 @@ function initGL(w::Integer,h::Integer)
             glTexCoord(1.0, 1.0)
             glVertex(-1.0,  1.0, -1.0)
         glEnd()
-    glEndlist()
+    glEndList()
 
     top = uint32(box+1)
 
-    glnewlist(top, GL_COMPILE)
+    glNewList(top, GL_COMPILE)
         glBegin(GL_QUADS)
             # Top Face
             glTexCoord(1.0, 1.0)
@@ -159,7 +157,7 @@ function initGL(w::Integer,h::Integer)
             glTexCoord(0.0, 1.0)
             glVertex(1.0, 1.0, -1.0)
         glEnd()
-    glEndlist()
+    glEndList()
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -169,7 +167,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -177,6 +175,8 @@ function ReSizeGLScene(w::Int32,h::Int32)
     gluPerspective(45.0,w/h,0.1,100.0)
 
     glMatrixMode(GL_MODELVIEW)
+   
+    return nothing
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -210,6 +210,8 @@ function DrawGLScene()
     end
 
     glutSwapBuffers()
+   
+    return nothing
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())

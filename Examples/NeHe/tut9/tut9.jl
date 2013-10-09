@@ -8,9 +8,10 @@
 # Up/Down - increase/decrease tilt about x-axis
 
 
-# load necessary GLUT/OpenGL routines and image routines for loading textures
+# load necessary GLUT/OpenGL routines
 
-require("image")
+global OpenGLver="1.0"
+using OpenGL
 using GLUT
 
 # initialize variables
@@ -25,18 +26,18 @@ type star
     angle::Float64
 end
 
-tempr = randi(256)
-tempg = randi(256)
-tempb = randi(256)
+tempr = rand(1:256)
+tempg = rand(1:256)
+tempb = rand(1:256)
 
 stars = [star(tempr,tempg,tempb,0.0,0.0)] # Julia doesn't like it when you try to initialize an empty array of
                                         # a composite type and try to fill it afterwards, so we start with a 1-element
                                         # vector and tack on values in a loop
 
 for loop = 1:STAR_NUM-1
-    tempr = randi(256)
-    tempg = randi(256)
-    tempb = randi(256)
+    tempr = rand(1:256)
+    tempg = rand(1:256)
+    tempb = rand(1:256)
     stars = push!(stars,star(tempr,tempg,tempb,loop/STAR_NUM*5.0,0.0))
 end
 
@@ -58,22 +59,19 @@ height         = 480
 function LoadGLTextures()
     global tex
 
-    img3D = imread(expanduser("~/.julia/GLUT/Examples/NeHe/tut9/Star.bmp"))
-    w     = size(img3D,2)
-    h     = size(img3D,1)
-    img   = glimg(img3D) # see OpenGLAux.jl for description
+    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut9/Star.bmp"))
 
     glGenTextures(1,tex)
     glBindTexture(GL_TEXTURE_2D,tex[1])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
     LoadGLTextures()
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0)			 
@@ -99,7 +97,7 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glViewPort(0,0,w,h)
+    glViewport(0,0,w,h)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -107,6 +105,8 @@ function ReSizeGLScene(w::Int32,h::Int32)
     gluPerspective(45.0,w/h,0.1,100.0)
 
     glMatrixMode(GL_MODELVIEW)
+   
+    return nothing
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -176,14 +176,16 @@ function DrawGLScene()
 
         if stars[loop].dist < 0.0
             stars[loop].dist  +=5.0
-            stars[loop].r     = randi(256)
-            stars[loop].g     = randi(256)
-            stars[loop].b     = randi(256)
+            stars[loop].r     = rand(1:256)
+            stars[loop].g     = rand(1:256)
+            stars[loop].b     = rand(1:256)
         end
 
     end
 
     glutSwapBuffers()
+   
+    return nothing
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())

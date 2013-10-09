@@ -1,89 +1,84 @@
-using OpenGL
-require("OpenGL/src/OpenGLAux")
-require("OpenGL/src/GLU")
-using OpenGLAux
-using GLU
 
 module GLUT
 
-import GetC.@get_c_fun
+import GetC.@getCFun
 
-@get_c_fun "libglut" glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
+@getCFun "libglut" glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
 glutInit() = glutInit([1],["a"])
 export glutInit
 
-@get_c_fun "libglut" glutInitWindowPosition glutInitWindowPosition(x::Int32, y::Int32)::Void
+@getCFun "libglut" glutInitWindowPosition glutInitWindowPosition(x::Int32, y::Int32)::Void
 export glutInitWindowPosition
-@get_c_fun "libglut" glutInitWindowSize glutInitWindowSize(width::Int32, height::Int32)::Void
+@getCFun "libglut" glutInitWindowSize glutInitWindowSize(width::Int32, height::Int32)::Void
 export glutInitWindowSize
-@get_c_fun "libglut" glutInitDisplayMode glutInitDisplayMode(displayMode::Uint32)::Void
+@getCFun "libglut" glutInitDisplayMode glutInitDisplayMode(displayMode::Uint32)::Void
 export glutInitDisplayMode
-@get_c_fun "libglut" glutInitDisplayString glutInitDisplayString(displayMode::Ptr{Uint8})::Void
+@getCFun "libglut" glutInitDisplayString glutInitDisplayString(displayMode::Ptr{Uint8})::Void
 export glutInitDisplayString
 
-@get_c_fun "libglut" glutMainLoop glutMainLoop()::Void
+@getCFun "libglut" glutMainLoop glutMainLoop()::Void
 export glutMainLoop
 
-@get_c_fun "libglut" glutCreateWindow glutCreateWindow(title::Ptr{Uint8})::Int32
+@getCFun "libglut" glutCreateWindow glutCreateWindow(title::Ptr{Uint8})::Int32
 export glutCreateWindow
-@get_c_fun "libglut" glutCreateSubWindow glutCreateSubWindow(window::Int32, x::Int32, y::Int32, width::Int32, height::Int32)::Int32
+@getCFun "libglut" glutCreateSubWindow glutCreateSubWindow(window::Int32, x::Int32, y::Int32, width::Int32, height::Int32)::Int32
 export glutCreateSubWindow
-@get_c_fun "libglut" glutDestroyWindow glutDestroyWindow(window::Int32)::Void
+@getCFun "libglut" glutDestroyWindow glutDestroyWindow(window::Int32)::Void
 export glutDestroyWindow
-@get_c_fun "libglut" glutSetWindow glutSetWindow(window::Int32)::Void
+@getCFun "libglut" glutSetWindow glutSetWindow(window::Int32)::Void
 export glutSetWindow
-@get_c_fun "libglut" glutGetWindow glutGetWindow()::Int32
+@getCFun "libglut" glutGetWindow glutGetWindow()::Int32
 export glutGetWindow
-@get_c_fun "libglut" glutSetWindowTitle glutSetWindowTitle(title::Ptr{Uint8})::Void
+@getCFun "libglut" glutSetWindowTitle glutSetWindowTitle(title::Ptr{Uint8})::Void
 export glutSetWindowTitle
-@get_c_fun "libglut" glutSetIconTitle glutSetIconTitle(title::Ptr{Uint8})::Void
+@getCFun "libglut" glutSetIconTitle glutSetIconTitle(title::Ptr{Uint8})::Void
 export glutSetIconTitle
-@get_c_fun "libglut" glutReshapeWindow glutReshapeWindow(width::Int32, height::Int32)::Void
+@getCFun "libglut" glutReshapeWindow glutReshapeWindow(width::Int32, height::Int32)::Void
 export glutReshapeWindow
-@get_c_fun "libglut" glutPositionWindow glutPositionWindow(x::Int32, y::Int32)::Void
+@getCFun "libglut" glutPositionWindow glutPositionWindow(x::Int32, y::Int32)::Void
 export glutPositionWindow
-@get_c_fun "libglut" glutShowWindow glutShowWindow()::Void
+@getCFun "libglut" glutShowWindow glutShowWindow()::Void
 export glutShowWindow
-@get_c_fun "libglut" glutHideWindow glutHideWindow()::Void
+@getCFun "libglut" glutHideWindow glutHideWindow()::Void
 export glutHideWindow
-@get_c_fun "libglut" glutIconifyWindow glutIconifyWindow()::Void
+@getCFun "libglut" glutIconifyWindow glutIconifyWindow()::Void
 export glutIconifyWindow
-@get_c_fun "libglut" glutPushWindow glutPushWindow()::Void
+@getCFun "libglut" glutPushWindow glutPushWindow()::Void
 export glutPushWindow
-@get_c_fun "libglut" glutPopWindow glutPopWindow()::Void
+@getCFun "libglut" glutPopWindow glutPopWindow()::Void
 export glutPopWindow
-@get_c_fun "libglut" glutFullScreen glutFullScreen()::Void
+@getCFun "libglut" glutFullScreen glutFullScreen()::Void
 export glutFullScreen
 
-@get_c_fun "libglut" glutPostWindowRedisplay glutPostWindowRedisplay(window::Int32)::Void
+@getCFun "libglut" glutPostWindowRedisplay glutPostWindowRedisplay(window::Int32)::Void
 export glutPostWindowRedisplay
-@get_c_fun "libglut" glutPostRedisplay glutPostRedisplay()::Void
+@getCFun "libglut" glutPostRedisplay glutPostRedisplay()::Void
 export glutPostRedisplay
-@get_c_fun "libglut" glutSwapBuffers glutSwapBuffers()::Void
+@getCFun "libglut" glutSwapBuffers glutSwapBuffers()::Void
 export glutSwapBuffers
 
-@get_c_fun "libglut" glutTimerFunc glutTimerFunc(time::Uint32, callback::Ptr{None}, value::Int32)::Void
+@getCFun "libglut" glutTimerFunc glutTimerFunc(time::Uint32, callback::Ptr{None}, value::Int32)::Void
 export glutTimerFunc
-@get_c_fun "libglut" glutIdleFunc glutIdleFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutIdleFunc glutIdleFunc(callback::Ptr{None})::Void
 export glutIdleFunc
 
-@get_c_fun "libglut" glutKeyboardFunc glutKeyboardFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutKeyboardFunc glutKeyboardFunc(callback::Ptr{None})::Void
 export glutKeyboardFunc
-@get_c_fun "libglut" glutSpecialFunc glutSpecialFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutSpecialFunc glutSpecialFunc(callback::Ptr{None})::Void
 export glutSpecialFunc
-@get_c_fun "libglut" glutReshapeFunc glutReshapeFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutReshapeFunc glutReshapeFunc(callback::Ptr{None})::Void
 export glutReshapeFunc
-@get_c_fun "libglut" glutVisibilityFunc glutVisibilityFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutVisibilityFunc glutVisibilityFunc(callback::Ptr{None})::Void
 export glutVisibilityFunc
-@get_c_fun "libglut" glutDisplayFunc glutDisplayFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutDisplayFunc glutDisplayFunc(callback::Ptr{None})::Void
 export glutDisplayFunc
-@get_c_fun "libglut" glutMouseFunc glutMouseFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutMouseFunc glutMouseFunc(callback::Ptr{None})::Void
 export glutMouseFunc
-@get_c_fun "libglut" glutMotionFunc glutMotionFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutMotionFunc glutMotionFunc(callback::Ptr{None})::Void
 export glutMotionFunc
-@get_c_fun "libglut" glutPassiveMotionFunc glutPassiveMotionFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutPassiveMotionFunc glutPassiveMotionFunc(callback::Ptr{None})::Void
 export glutPassiveMotionFunc
-@get_c_fun "libglut" glutEntryFunc glutEntryFunc(callback::Ptr{None})::Void
+@getCFun "libglut" glutEntryFunc glutEntryFunc(callback::Ptr{None})::Void
 export glutEntryFunc
 
 const  FREEGLUT                        = 1

@@ -19,19 +19,19 @@ height = 480
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-    glviewport(0,0,w,h)
-    glclearcolor(0.0, 0.0, 0.0, 0.0)
-    glcleardepth(1.0)			 
-    gldepthfunc(GL_LESS)	 
-    glenable(GL_DEPTH_TEST)
-    glshademodel(GL_SMOOTH)
+    glViewPort(0,0,w,h)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)			 
+    glDepthFunc(GL_LESS)	 
+    glEnable(GL_DEPTH_TEST)
+    glShadeModel(GL_SMOOTH)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -41,49 +41,49 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
-    glcolor(1.0,1.0,1.0)
+    glColor(1.0,1.0,1.0)
 
-    gltranslate(-1.5,0.0,-6.0)
+    glTranslate(-1.5,0.0,-6.0)
 
-    glbegin(GL_POLYGON)
-      glvertex(0.0,1.0,0.0)
-      glvertex(1.0,-1.0,0.0)
-      glvertex(-1.0,-1.0,0.0)
-    glend()
+    glBegin(GL_POLYGON)
+      glVertex(0.0,1.0,0.0)
+      glVertex(1.0,-1.0,0.0)
+      glVertex(-1.0,-1.0,0.0)
+    glEnd()
 
-    gltranslate(3.0,0.0,0.0)
+    glTranslate(3.0,0.0,0.0)
 
-    glbegin(GL_QUADS)
-        glvertex(-1.0,1.0,0.0)
-        glvertex(1.0,1.0,0.0)
-        glvertex(1.0,-1.0,0.0)
-        glvertex(-1.0,-1.0,0.0)
-    glend()
+    glBegin(GL_QUADS)
+        glVertex(-1.0,1.0,0.0)
+        glVertex(1.0,1.0,0.0)
+        glVertex(1.0,-1.0,0.0)
+        glVertex(-1.0,-1.0,0.0)
+    glEnd()
 
-    glutswapbuffers()
+    glutSwapBuffers()
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
 function keyPressed(the_key::Char,x::Int32,y::Int32)
     if the_key == int('q')
-        glutdestroywindow(window)
+        glutDestroyWindow(window)
     end
 
     return nothing # keyPressed returns "void" in C. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
@@ -93,20 +93,20 @@ _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 
 # run GLUT routines
 
-glutinit()
-glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(width, height)
-glutinitwindowposition(0, 0)
+glutInit()
+glutInitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutInitwindowsize(width, height)
+glutInitwindowposition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 2")
+window = glutCreateWindow("NeHe Tut 2")
 
-glutdisplayfunc(_DrawGLScene)
-glutfullscreen()
+glutDisplayFunc(_DrawGLScene)
+glutFullScreen()
 
-glutidlefunc(_DrawGLScene)
-glutreshapefunc(_ReSizeGLScene)
-glutkeyboardfunc(_keyPressed)
+glutIdleFunc(_DrawGLScene)
+glutReshapeFunc(_ReSizeGLScene)
+glutKeyboardFunc(_keyPressed)
 
 initGL(width, height)
 
-glutmainloop()
+glutMainLoop()

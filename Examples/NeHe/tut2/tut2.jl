@@ -94,9 +94,9 @@ _keyPressed = cfunction(keyPressed, Void, (Char, Int32, Int32))
 # run GLUT routines
 
 glutInit()
-glutInitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutInitwindowsize(width, height)
-glutInitwindowposition(0, 0)
+glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutInitWindowSize(width, height)
+glutInitWindowPosition(0, 0)
 
 window = glutCreateWindow("NeHe Tut 2")
 

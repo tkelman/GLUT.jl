@@ -25,7 +25,7 @@ function SetupWorld(world_map::String)
     filein       = open(world_map)
     world_data   = readlines(filein)
 
-    numtriangles = parse_int(chomp(split(world_data[1],' ')[2]))
+    numtriangles = parseint(chomp(split(world_data[1],' ')[2]))
 
     sector       = zeros(numtriangles,3,5)
 
@@ -37,11 +37,11 @@ function SetupWorld(world_map::String)
         if world_data[2+line][1] != '/' && world_data[2+line][1] != '\n'
             while vert <= 3
                 (x, y, z, u, v)      = split(chomp(world_data[2+line]),' ')
-                x                    = parse_float(x)
-                y                    = parse_float(y)
-                z                    = parse_float(z)
-                u                    = parse_float(u)
-                v                    = parse_float(v)
+                x                    = parsefloat(x)
+                y                    = parsefloat(y)
+                z                    = parsefloat(z)
+                u                    = parsefloat(u)
+                v                    = parsefloat(v)
                 sector[loop,vert,:]  = [x,y,z,u,v]
                 vert                 += 1
                 line                 += 1
@@ -107,54 +107,54 @@ function LoadGLTextures()
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description
 
-    glgentextures(3,tex)
-    glbindtexture(GL_TEXTURE_2D,tex[1])
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glGenTextures(3,tex)
+    glBindTexture(GL_TEXTURE_2D,tex[1])
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-    glbindtexture(GL_TEXTURE_2D,tex[2])
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glBindTexture(GL_TEXTURE_2D,tex[2])
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-    glbindtexture(GL_TEXTURE_2D,tex[3])
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glBindTexture(GL_TEXTURE_2D,tex[3])
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 
-    glubuild2dmipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
+    gluBuild2dMipMaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
     LoadGLTextures()
-    glclearcolor(0.0, 0.0, 0.0, 0.0)
-    glcleardepth(1.0)			 
-    gldepthfunc(GL_LESS)	 
-    glenable(GL_DEPTH_TEST)
-    glshademodel(GL_SMOOTH)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)			 
+    glDepthFunc(GL_LESS)	 
+    glEnable(GL_DEPTH_TEST)
+    glShadeModel(GL_SMOOTH)
 
     # initialize lights
-    gllightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
-    gllightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
-    gllightfv(GL_LIGHT1, GL_POSITION, LightPosition)
+    glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient)
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse)
+    glLightfv(GL_LIGHT1, GL_POSITION, LightPosition)
 
-    glenable(GL_LIGHT1)
-    glenable(GL_LIGHTING)
+    glEnable(GL_LIGHT1)
+    glEnable(GL_LIGHTING)
 
     # enable texture mapping and alpha blending
-    glenable(GL_TEXTURE_2D)
-    glblendfunc(GL_SRC_ALPHA, GL_ONE)
+    glEnable(GL_TEXTURE_2D)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -164,14 +164,14 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -190,50 +190,50 @@ function DrawGLScene()
     global numtriangles
     global sector1
 
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
     xtrans = -xpos
     ztrans = -zpos
     ytrans = -walkbias-0.25
     sceneroty = 360.0-yrot
 
-    glrotate(lookupdown, 1.0, 0.0, 0.0)
-    glrotate(sceneroty, 0.0, 1.0, 0.0)
-    gltranslate(xtrans, ytrans, ztrans)
+    glRotate(lookupdown, 1.0, 0.0, 0.0)
+    glRotate(sceneroty, 0.0, 1.0, 0.0)
+    glTranslate(xtrans, ytrans, ztrans)
 
-    glbindtexture(GL_TEXTURE_2D,tex[filter])
+    glBindTexture(GL_TEXTURE_2D,tex[filter])
 
     for face = 1:numtriangles
-        glbegin(GL_TRIANGLES)
-            glnormal(0.0, 0.0, 1.0)
+        glBegin(GL_TRIANGLES)
+            glNormal(0.0, 0.0, 1.0)
             x_m = sector1[face,1,1]
             y_m = sector1[face,1,2]
             z_m = sector1[face,1,3]
             u_m = sector1[face,1,4]
             v_m = sector1[face,1,5]
-            gltexcoord(u_m,v_m) 
-            glvertex(x_m,y_m,z_m)
+            glTexCoord(u_m,v_m) 
+            glVertex(x_m,y_m,z_m)
 
             x_m = sector1[face,2,1]
             y_m = sector1[face,2,2]
             z_m = sector1[face,2,3]
             u_m = sector1[face,2,4]
             v_m = sector1[face,2,5]
-            gltexcoord(u_m,v_m) 
-            glvertex(x_m,y_m,z_m)
+            glTexCoord(u_m,v_m) 
+            glVertex(x_m,y_m,z_m)
 
             x_m = sector1[face,3,1]
             y_m = sector1[face,3,2]
             z_m = sector1[face,3,3]
             u_m = sector1[face,3,4]
             v_m = sector1[face,3,5]
-            gltexcoord(u_m,v_m)
-            glvertex(x_m,y_m,z_m)
-        glend()
+            glTexCoord(u_m,v_m)
+            glVertex(x_m,y_m,z_m)
+        glEnd()
     end
 
-    glutswapbuffers()
+    glutSwapBuffers()
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
@@ -244,16 +244,16 @@ function keyPressed(the_key::Char,x::Int32,y::Int32)
     global filter
 
     if the_key == int('q')
-        glutdestroywindow(window)
+        glutDestroyWindow(window)
     elseif the_key == int('b')
         println("Blend was: $blend")
         blend = (blend ? false : true)
         if blend
-            glenable(GL_BLEND)
-            gldisable(GL_DEPTH_TEST)
+            glEnable(GL_BLEND)
+            glDisable(GL_DEPTH_TEST)
         else
-            gldisable(GL_BLEND)
-            glenable(GL_DEPTH_TEST)
+            glDisable(GL_BLEND)
+            glEnable(GL_DEPTH_TEST)
         end
         println("Blend is now: $blend")
     elseif the_key == int('l')
@@ -261,9 +261,9 @@ function keyPressed(the_key::Char,x::Int32,y::Int32)
         light = (light ? false : true)
         println("Light is now: $light")
         if light
-            glenable(GL_LIGHTING)
+            glEnable(GL_LIGHTING)
         else
-            gldisable(GL_LIGHTING)
+            glDisable(GL_LIGHTING)
         end
     elseif the_key == int('f')
         println("Filter was: $filter")
@@ -324,21 +324,21 @@ _specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))
 
 # run GLUT routines
 
-glutinit()
-glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(width, height)
-glutinitwindowposition(0, 0)
+glutInit()
+glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutInitWindowSize(width, height)
+glutInitWindowPosition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 10")
+window = glutCreateWindow("NeHe Tut 10")
 
-glutdisplayfunc(_DrawGLScene)
-glutfullscreen()
+glutDisplayFunc(_DrawGLScene)
+glutFullScreen()
 
-glutidlefunc(_DrawGLScene)
-glutreshapefunc(_ReSizeGLScene)
-glutkeyboardfunc(_keyPressed)
-glutspecialfunc(_specialKeyPressed)
+glutIdleFunc(_DrawGLScene)
+glutReshapeFunc(_ReSizeGLScene)
+glutKeyboardFunc(_keyPressed)
+glutSpecialFunc(_specialKeyPressed)
 
 initGL(width, height)
 
-glutmainloop()
+glutMainLoop()

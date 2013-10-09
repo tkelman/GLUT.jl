@@ -63,33 +63,33 @@ function LoadGLTextures()
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description
 
-    glgentextures(1,tex)
-    glbindtexture(GL_TEXTURE_2D,tex[1])
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glGenTextures(1,tex)
+    glBindTexture(GL_TEXTURE_2D,tex[1])
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
     LoadGLTextures()
-    glclearcolor(0.0, 0.0, 0.0, 0.0)
-    glcleardepth(1.0)			 
-    glshademodel(GL_SMOOTH)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)			 
+    glShadeModel(GL_SMOOTH)
 
     # enable texture mapping and alpha blending
-    glenable(GL_TEXTURE_2D)
-    glenable(GL_BLEND)
+    glEnable(GL_TEXTURE_2D)
+    glEnable(GL_BLEND)
     glblendfunc(GL_SRC_ALPHA, GL_ONE)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -99,14 +99,14 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -120,55 +120,55 @@ function DrawGLScene()
     global tex
     global spin
 
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glloadidentity()
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
 
-    glbindtexture(GL_TEXTURE_2D,tex[1])
+    glBindTexture(GL_TEXTURE_2D,tex[1])
 
     for loop = 1:STAR_NUM
 
-        glloadidentity()
+        glLoadIdentity()
 
-        gltranslate(0.0, 0.0, zoom)
+        glTranslate(0.0, 0.0, zoom)
 
-        glrotate(tilt,1.0,0.0,0.0)
-        glrotate(stars[loop].angle, 0.0, 1.0, 0.0)
+        glRotate(tilt,1.0,0.0,0.0)
+        glRotate(stars[loop].angle, 0.0, 1.0, 0.0)
 
-        gltranslate(stars[loop].dist, 0.0, 0.0)
+        glTranslate(stars[loop].dist, 0.0, 0.0)
 
-        glrotate(-stars[loop].angle, 0.0, 1.0, 0.0)
-        glrotate(-tilt,1.0,0.0,0.0)
+        glRotate(-stars[loop].angle, 0.0, 1.0, 0.0)
+        glRotate(-tilt,1.0,0.0,0.0)
 
         if twinkle
-            glcolor4ub(stars[STAR_NUM - loop + 1].r,stars[STAR_NUM - loop + 1].g,stars[STAR_NUM - loop + 1].b,255)
+            glColor4ub(stars[STAR_NUM - loop + 1].r,stars[STAR_NUM - loop + 1].g,stars[STAR_NUM - loop + 1].b,255)
 
-            glbegin(GL_QUADS)
-                gltexcoord(0.0, 0.0)
-                glvertex(-1.0, -1.0, 0.0)
-                gltexcoord(1.0, 0.0)
-                glvertex(1.0, -1.0, 0.0)
-                gltexcoord(1.0, 1.0)
-                glvertex(1.0, 1.0, 0.0)
-                gltexcoord(0.0, 1.0)
-                glvertex(-1.0, 1.0, 0.0)
-            glend()
+            glBegin(GL_QUADS)
+                glTexCoord(0.0, 0.0)
+                glVertex(-1.0, -1.0, 0.0)
+                glTexCoord(1.0, 0.0)
+                glVertex(1.0, -1.0, 0.0)
+                glTexCoord(1.0, 1.0)
+                glVertex(1.0, 1.0, 0.0)
+                glTexCoord(0.0, 1.0)
+                glVertex(-1.0, 1.0, 0.0)
+            glEnd()
         end
 
         # main star
 
-        glrotate(spin, 0.0, 0.0, 1.0)
-        glcolor4ub(stars[loop].r, stars[loop].g, stars[loop].b, 255)
+        glRotate(spin, 0.0, 0.0, 1.0)
+        glColor4ub(stars[loop].r, stars[loop].g, stars[loop].b, 255)
 
-        glbegin(GL_QUADS)
-            gltexcoord(0.0, 0.0)
-            glvertex(-1.0, -1.0, 0.0)
-            gltexcoord(1.0, 0.0)
-            glvertex(1.0, -1.0, 0.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(1.0, 1.0, 0.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(-1.0, 1.0, 0.0)
-        glend()
+        glBegin(GL_QUADS)
+            glTexCoord(0.0, 0.0)
+            glVertex(-1.0, -1.0, 0.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(1.0, -1.0, 0.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(1.0, 1.0, 0.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(-1.0, 1.0, 0.0)
+        glEnd()
 
         spin              +=0.01
         stars[loop].angle +=loop/STAR_NUM
@@ -183,7 +183,7 @@ function DrawGLScene()
 
     end
 
-    glutswapbuffers()
+    glutSwapBuffers()
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
@@ -192,7 +192,7 @@ function keyPressed(the_key::Char,x::Int32,y::Int32)
     global twinkle
 
     if the_key == int('q')
-        glutdestroywindow(window)
+        glutDestroyWindow(window)
     elseif the_key == int('t')
         println("Twinkle was: $twinkle")
         twinkle = (twinkle ? false : true)
@@ -225,21 +225,21 @@ _specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))
 
 # run GLUT routines
 
-glutinit()
-glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(width, height)
-glutinitwindowposition(0, 0)
+glutInit()
+glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutInitWindowSize(width, height)
+glutInitWindowPosition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 9")
+window = glutCreateWindow("NeHe Tut 9")
 
-glutdisplayfunc(_DrawGLScene)
-glutfullscreen()
+glutDisplayFunc(_DrawGLScene)
+glutFullScreen()
 
-glutidlefunc(_DrawGLScene)
-glutreshapefunc(_ReSizeGLScene)
-glutkeyboardfunc(_keyPressed)
-glutspecialfunc(_specialKeyPressed)
+glutIdleFunc(_DrawGLScene)
+glutReshapeFunc(_ReSizeGLScene)
+glutKeyboardFunc(_keyPressed)
+glutSpecialFunc(_specialKeyPressed)
 
 initGL(width, height)
 
-glutmainloop()
+glutMainLoop()

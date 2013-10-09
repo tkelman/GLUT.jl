@@ -49,12 +49,12 @@ function LoadGLTextures()
     h     = size(img3D,1)
     img   = glimg(img3D) # see OpenGLAux.jl for description
 
-    glgentextures(1,tex)
-    glbindtexture(GL_TEXTURE_2D,tex[1])
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST)
-    gltexparameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glteximage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
-    glubuild2dmipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glGenTextures(1,tex)
+    glBindTexture(GL_TEXTURE_2D,tex[1])
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2d(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    gluBuild2dMipMaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, img)
 end
 
 # function to init OpenGL context
@@ -63,103 +63,103 @@ function initGL(w::Integer,h::Integer)
     global box
     global top
 
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
     LoadGLTextures()
-    glclearcolor(0.0, 0.0, 0.0, 0.5)
-    glcleardepth(1.0)			 
-    gldepthfunc(GL_LEQUAL)
-    glenable(GL_DEPTH_TEST)
-    glshademodel(GL_SMOOTH)
-    glhint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+    glClearColor(0.0, 0.0, 0.0, 0.5)
+    glClearDepth(1.0)			 
+    glDepthFunc(GL_LEQUAL)
+    glEnable(GL_DEPTH_TEST)
+    glShadeModel(GL_SMOOTH)
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
     # enable texture mapping
-    glenable(GL_TEXTURE_2D)
+    glEnable(GL_TEXTURE_2D)
 
     #enable simple lighting
-    glenable(GL_LIGHT0)         
-    glenable(GL_LIGHTING)
-    glenable(GL_COLOR_MATERIAL)
+    glEnable(GL_LIGHT0)         
+    glEnable(GL_LIGHTING)
+    glEnable(GL_COLOR_MATERIAL)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 
     # build the display lists
 
     box = glgenlists(2)
 
     glnewlist(box, GL_COMPILE)
-        glbegin(GL_QUADS)
+        glBegin(GL_QUADS)
             # Bottom Face
-            gltexcoord(0.0, 1.0)
-            glvertex(-1.0, -1.0, -1.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(1.0, -1.0, -1.0)
-            gltexcoord(1.0, 0.0)
-            glvertex(1.0, -1.0,  1.0)
-            gltexcoord(0.0, 0.0)
-            glvertex(-1.0, -1.0,  1.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(-1.0, -1.0, -1.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(1.0, -1.0, -1.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(1.0, -1.0,  1.0)
+            glTexCoord(0.0, 0.0)
+            glVertex(-1.0, -1.0,  1.0)
 
             # Front Face
-            gltexcoord(1.0, 0.0)
-            glvertex(-1.0, -1.0,  1.0)
-            gltexcoord(0.0, 0.0)
-            glvertex(1.0, -1.0,  1.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(1.0,  1.0,  1.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(-1.0,  1.0,  1.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(-1.0, -1.0,  1.0)
+            glTexCoord(0.0, 0.0)
+            glVertex(1.0, -1.0,  1.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(1.0,  1.0,  1.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(-1.0,  1.0,  1.0)
 
             # Back Face
-            gltexcoord(0.0, 0.0)
-            glvertex(-1.0, -1.0, -1.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(-1.0,  1.0, -1.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(1.0,  1.0, -1.0)
-            gltexcoord(1.0, 0.0)
-            glvertex(1.0, -1.0, -1.0)
+            glTexCoord(0.0, 0.0)
+            glVertex(-1.0, -1.0, -1.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(-1.0,  1.0, -1.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(1.0,  1.0, -1.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(1.0, -1.0, -1.0)
 
             # Right Face
-            gltexcoord(0.0, 0.0)
-            glvertex(1.0, -1.0, -1.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(1.0,  1.0, -1.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(1.0,  1.0,  1.0)
-            gltexcoord(1.0, 0.0)
-            glvertex(1.0, -1.0,  1.0)
+            glTexCoord(0.0, 0.0)
+            glVertex(1.0, -1.0, -1.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(1.0,  1.0, -1.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(1.0,  1.0,  1.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(1.0, -1.0,  1.0)
 
             # Left Face
-            gltexcoord(1.0, 0.0)
-            glvertex(-1.0, -1.0, -1.0)
-            gltexcoord(0.0, 0.0)
-            glvertex(-1.0, -1.0,  1.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(-1.0,  1.0,  1.0)
-            gltexcoord(1.0, 1.0)
-            glvertex(-1.0,  1.0, -1.0)
-        glend()
-    glendlist()
+            glTexCoord(1.0, 0.0)
+            glVertex(-1.0, -1.0, -1.0)
+            glTexCoord(0.0, 0.0)
+            glVertex(-1.0, -1.0,  1.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(-1.0,  1.0,  1.0)
+            glTexCoord(1.0, 1.0)
+            glVertex(-1.0,  1.0, -1.0)
+        glEnd()
+    glEndlist()
 
     top = uint32(box+1)
 
     glnewlist(top, GL_COMPILE)
-        glbegin(GL_QUADS)
+        glBegin(GL_QUADS)
             # Top Face
-            gltexcoord(1.0, 1.0)
-            glvertex(-1.0, 1.0, -1.0)
-            gltexcoord(1.0, 0.0)
-            glvertex(-1.0, 1.0,  1.0)
-            gltexcoord(0.0, 0.0)
-            glvertex(1.0, 1.0,  1.0)
-            gltexcoord(0.0, 1.0)
-            glvertex(1.0, 1.0, -1.0)
-        glend()
-    glendlist()
+            glTexCoord(1.0, 1.0)
+            glVertex(-1.0, 1.0, -1.0)
+            glTexCoord(1.0, 0.0)
+            glVertex(-1.0, 1.0,  1.0)
+            glTexCoord(0.0, 0.0)
+            glVertex(1.0, 1.0,  1.0)
+            glTexCoord(0.0, 1.0)
+            glVertex(1.0, 1.0, -1.0)
+        glEnd()
+    glEndlist()
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -169,14 +169,14 @@ function ReSizeGLScene(w::Int32,h::Int32)
         h = 1
     end
 
-    glviewport(0,0,w,h)
+    glViewPort(0,0,w,h)
 
-    glmatrixmode(GL_PROJECTION)
-    glloadidentity()
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
 
-    gluperspective(45.0,w/h,0.1,100.0)
+    gluPerspective(45.0,w/h,0.1,100.0)
 
-    glmatrixmode(GL_MODELVIEW)
+    glMatrixMode(GL_MODELVIEW)
 end
 
 _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
@@ -188,35 +188,35 @@ function DrawGLScene()
     global box
     global top
 
-    glclear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    glbindtexture(GL_TEXTURE_2D, tex[1])
+    glBindTexture(GL_TEXTURE_2D, tex[1])
 
     for yloop = 1:5
 	      for xloop = 1:yloop
-            glloadidentity()
+            glLoadIdentity()
 
-            gltranslate(1.4+2.8xloop-1.4yloop, ((6.0-yloop)*2.4)-7.0, -20.0)
+            glTranslate(1.4+2.8xloop-1.4yloop, ((6.0-yloop)*2.4)-7.0, -20.0)
 
-            glrotate(45.0-(2.0yloop)+xrot, 1.0, 0.0, 0.0)
-            glrotate(45.0+yrot, 0.0, 1.0, 0.0)
+            glRotate(45.0-(2.0yloop)+xrot, 1.0, 0.0, 0.0)
+            glRotate(45.0+yrot, 0.0, 1.0, 0.0)
 
-            glcolor(boxcol[yloop,:])
-            glcalllist(box)         
+            glColor(boxcol[yloop,:])
+            glCallList(box)
             
-            glcolor(topcol[yloop,:])
-            glcalllist(top)        
+            glColor(topcol[yloop,:])
+            glCallList(top)
         end
     end
 
-    glutswapbuffers()
+    glutSwapBuffers()
 end
    
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
 function keyPressed(the_key::Char,x::Int32,y::Int32)
     if the_key == int('q')
-        glutdestroywindow(window)
+        glutDestroyWindow(window)
     end
 
     return nothing # keyPressed returns "void" in C. this is a workaround for Julia's "automatically return the value of the last expression in a function" behavior.
@@ -245,21 +245,21 @@ _specialKeyPressed = cfunction(specialKeyPressed, Void, (Int32, Int32, Int32))
 
 # run GLUT routines
 
-glutinit()
-glutinitdisplaymode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-glutinitwindowsize(width, height)
-glutinitwindowposition(0, 0)
+glutInit()
+glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
+glutInitWindowSize(width, height)
+glutInitWindowPosition(0, 0)
 
-window = glutcreatewindow("NeHe Tut 12")
+window = glutCreateWindow("NeHe Tut 12")
 
-glutdisplayfunc(_DrawGLScene)
-glutfullscreen()
+glutDisplayFunc(_DrawGLScene)
+glutFullScreen()
 
-glutidlefunc(_DrawGLScene)
-glutreshapefunc(_ReSizeGLScene)
-glutkeyboardfunc(_keyPressed)
-glutspecialfunc(_specialKeyPressed)
+glutIdleFunc(_DrawGLScene)
+glutReshapeFunc(_ReSizeGLScene)
+glutKeyboardFunc(_keyPressed)
+glutSpecialFunc(_specialKeyPressed)
 
 initGL(width, height)
 
-glutmainloop()
+glutMainLoop()

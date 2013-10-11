@@ -1,6 +1,6 @@
 # Mon 31 Dec 2012 01:39:42 PM EST
 #
-# NeHe Tut 16 - Implement lights and rotate a textured cube
+# NeHe Tut 18 - Make quadrics with GLU commands (builds on tut7)
 #
 # Q - quit
 # L - turn lights on/off
@@ -131,7 +131,7 @@ global LightPosition = [0.0f0, 0.0f0, 2.0f0, 1.0f0]
 function LoadGLTextures()
     global tex
 
-    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut16/crate.bmp"))
+    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut18/crate.bmp"))
 
     glGenTextures(3,tex)
     glBindTexture(GL_TEXTURE_2D,tex[1])
@@ -189,6 +189,11 @@ function initGL(w::Integer,h::Integer)
 
     glEnable(GL_LIGHT1)
     glEnable(GL_LIGHTING)
+
+    # enable texture mapping & blending
+    glEnable(GL_TEXTURE_2D)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+    glColor(1.0, 1.0, 1.0, 0.5)
 
     # intialize quadric info
     quadratic = gluNewQuadric()
@@ -361,7 +366,7 @@ glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
 glutInitWindowSize(width, height)
 glutInitWindowPosition(0, 0)
 
-window = glutCreateWindow("NeHe Tut 16")
+window = glutCreateWindow("NeHe Tut 18")
 
 glutDisplayFunc(_DrawGLScene)
 glutFullScreen()

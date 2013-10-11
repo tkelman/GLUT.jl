@@ -1,6 +1,6 @@
 # Mon 31 Dec 2012 01:40:11 PM EST
 #
-# NeHe Tut 17 - Rotate a textured cube
+# NeHe Tut 17 - 2D texture font
 #
 # Q - quit
 # L - turn lights on/off
@@ -20,68 +20,35 @@ using GLUT
 
 ### auxiliary functions
 
-function cube(size)
-  glBegin(GL_QUADS)
-    # Front Face
-    glTexCoord(0.0, 0.0)
-    glVertex(-size, -size, size)
-    glTexCoord(1.0, 0.0)
-    glVertex(size, -size, size)
-    glTexCoord(1.0, 1.0)
-    glVertex(size, size, size)
-    glTexCoord(0.0, 1.0)
-    glVertex(-size, size, size)
+function glPrint(x::Integer, y::Integer, string::String, set::Integer)
+    global base
 
-    # Back Face
-    glTexCoord(1.0, 0.0)
-    glVertex(-size, -size, -size)
-    glTexCoord(1.0, 1.0)
-    glVertex(-size, size, -size)
-    glTexCoord(0.0, 1.0)
-    glVertex(size, size, -size)
-    glTexCoord(0.0, 0.0)
-    glVertex(size, -size, -size)
+    if set > 1
+        set = 1
+    end
 
-    # Top Face
-    glTexCoord(0.0, 1.0)
-    glVertex(-size, size, -size)
-    glTexCoord(0.0, 0.0)
-    glVertex(-size, size, size)
-    glTexCoord(1.0, 0.0)
-    glVertex(size, size, size)
-    glTexCoord(1.0, 1.0)
-    glVertex(size, size, -size)
+    glBindTexture(GL_TEXTURE_2D, tex[1])
+    glDisable(GL_DEPTH_TEST)
 
-    # Bottom Face
-    glTexCoord(1.0, 1.0)
-    glVertex(-size, -size, -size)
-    glTexCoord(0.0, 1.0)
-    glVertex(size, -size, -size)
-    glTexCoord(0.0, 0.0)
-    glVertex(size, -size, size)
-    glTexCoord(1.0, 0.0)
-    glVertex(-size, -size, size)
+    glMatrixMode(GL_PROJECTION)
+    glpushmatrix()
 
-    # Right Face
-    glTexCoord(1.0, 0.0)
-    glVertex(size, -size, -size)
-    glTexCoord(1.0, 1.0)
-    glVertex(size, size, -size)
-    glTexCoord(0.0, 1.0)
-    glVertex(size, size, size)
-    glTexCoord(0.0, 0.0)
-    glVertex(size, -size, size)
+    glLoadIdentity()
+    glOrtho(0, 640, 0, 480, -1, 1)
 
-    # Left Face
-    glTexCoord(0.0, 0.0)
-    glVertex(-size, -size, -size)
-    glTexCoord(1.0, 0.0)
-    glVertex(-size, -size, size)
-    glTexCoord(1.0, 1.0)
-    glVertex(-size, size, size)
-    glTexCoord(0.0, 1.0)
-    glVertex(-size, size, -size)
-  glEnd()
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+
+    glTranslate(x, y, 0)
+    glListBase(uint32(base-32+(128*set)))
+    glCallLists(strlen(string), GL_BYTE, string)
+
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+
+    glMatrixMode(GL_MODELVIEW)
+    glPopMatrix()
 end
 
 ### end of auxiliary functions
@@ -89,14 +56,15 @@ end
 # initialize variables
 
 global window
+global base
 
-global xrot      = 0.0
-global yrot      = 0.0
-global zrot      = 0.0
+global tex       = Array(Uint32,2) # generating 2 textures
 
-global tex       = Array(Uint32,1) # generating 1 texture
+T0                 = 0
+Frames             = 0
 
-global cube_size = 1.0
+cnt1               = 0
+cnt2               = 0
 
 width            = 640
 height           = 480
@@ -106,35 +74,69 @@ height           = 480
 function LoadGLTextures()
     global tex
 
-    img, w, h = glimread(expanduser("~/.julia/GLUT/Examples/NeHe/tut17/NeHe.bmp"))
+    imgFont, wFont, hFont = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/font.bmp"))
 
-    glGenTextures(1,tex)
+    imgBumps, wBumps, hBumps = glimread(expanduser("~/.julia/SDL/Examples/NeHe/tut17/bumps.bmp"))
+
+    glGenTextures(2,tex)
     glBindTexture(GL_TEXTURE_2D,tex[1])
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, wFont, hFont, 0, GL_RGB, GL_UNSIGNED_BYTE, imgFont)
+
+    glBindTexture(GL_TEXTURE_2D,tex[2])
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, wBumps, hBumps, 0, GL_RGB, GL_UNSIGNED_BYTE, imgBumps)
 end
 
 # function to init OpenGL context
 
 function initGL(w::Integer,h::Integer)
+    global base
+
     glViewport(0,0,w,h)
     LoadGLTextures()
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0)			 
-    glDepthFunc(GL_LESS)	 
+    glDepthFunc(GL_LEQUAL)
     glEnable(GL_DEPTH_TEST)
     glShadeModel(GL_SMOOTH)
-
-    # enable texture mapping
-    glEnable(GL_TEXTURE_2D)
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
 
+    # enable texture mapping & blending
+    glEnable(GL_TEXTURE_2D)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+
     gluPerspective(45.0,w/h,0.1,100.0)
 
     glMatrixMode(GL_MODELVIEW)
+    
+    # build the fonts
+
+    base = glGenLists(256)
+    glBindTexture(GL_TEXTURE_2D, tex[1])
+
+    for loop = 1:256
+        cx = (loop%16)/16
+        cy = (loop/16)/16
+
+        glNewList(uint32(base+(loop-1)), GL_COMPILE)
+            glBegin(GL_QUADS)
+                glTexCoord(cx, 1-cy-0.0625)
+                glVertex(0, 0)
+                glTexCoord(cx+0.0625, 1-cy-0.0625)
+                glVertex(16, 0)
+                glTexCoord(cx+0.0625, 1-cy)
+                glVertex(16, 16)
+                glTexCoord(cx, 1-cy)
+                glVertex(0, 16)
+            glEnd()
+            glTranslate(10, 0, 0)
+        glEndList()
+    end
 end
 
 # prepare Julia equivalents of C callbacks that are typically used in GLUT code
@@ -160,24 +162,56 @@ _ReSizeGLScene = cfunction(ReSizeGLScene, Void, (Int32, Int32))
 
 function DrawGLScene()
     global tex
-    global xrot
-    global yrot
-    global zrot
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
+    
+    glBindTexture(GL_TEXTURE_2D,tex[2])
 
-    glTranslate(0.0, 0.0, -5.0)
+    glTranslate(0.0,0.0,-5.0)
+    glRotate(45.0, 0.0, 0.0, 1.0)
+    glRotate(cnt1*30.0, 1.0, 1.0, 0.0)
 
-    glRotate(xrot,1.0,0.0,0.0)
-    glRotate(yrot,0.0,1.0,0.0)
-    glRotate(zrot,0.0,0.0,1.0)
+    glDisable(GL_BLEND)
+    glColor(1.0, 1.0, 1.0)
 
-    glBindTexture(GL_TEXTURE_2D,tex[1])
-    cube(cube_size)
+    glBegin(GL_QUADS)
+        glTexCoord(0.0, 0.0)
+        glVertex(-1.0, 1.0)
+        glTexCoord(1.0, 0.0)
+        glVertex(1.0, 1.0)
+        glTexCoord(1.0, 1.0)
+        glVertex(1.0, -1.0)
+        glTexCoord(0.0, 1.0)
+        glVertex(-1.0, -1.0)
+    glEnd()
 
-    xrot +=0.2
-    yrot +=0.3
-    zrot +=0.4
+    glRotate(90.0, 1.0, 1.0, 0.0)
+    glBegin(GL_QUADS)
+        glTexCoord(0.0, 0.0)
+        glVertex(-1.0, 1.0)
+        glTexCoord(1.0, 0.0)
+        glVertex(1.0, 1.0)
+        glTexCoord(1.0, 1.0)
+        glVertex(1.0, -1.0)
+        glTexCoord(0.0, 1.0)
+        glVertex(-1.0, -1.0)
+    glEnd()
+
+    glEnable(GL_BLEND)
+    glLoadIdentity()
+
+    glColor(1.0cos(cnt1), 1.0sin(cnt2), 1.0-0.5cos(cnt1+cnt2))
+    glPrint(int(280+250cos(cnt1)), int(235+200sin(cnt2)), "NeHe", 0)
+    glColor(1.0sin(cnt2), 1.0-0.5cos(cnt1+cnt2), 1.0cos(cnt1))
+    glPrint(int(280+230cos(cnt2)), int(235+200sin(cnt1)), "OpenGL", 1)
+
+    glColor(0.0, 0.0, 1.0)
+    glPrint(int(240+200cos((cnt2+cnt1)/5)), 2, "JuliaLang", 0)
+    glColor(1.0, 1.0, 1.0)
+    glPrint(int(242+200cos((cnt2+cnt1)/5)), 2, "JuliaLang", 0)
+
+    cnt1 +=0.01
+    cnt2 +=0.0081
 
     glutSwapBuffers()
    
@@ -187,7 +221,11 @@ end
 _DrawGLScene = cfunction(DrawGLScene, Void, ())
 
 function keyPressed(key::Char,x::Int32,y::Int32)
+    global base
+
     if key == int('q')
+        glDeleteLists(base,256)
+        glDeleteTextures(2,tex)
         glutDestroyWindow(window)
     end
 

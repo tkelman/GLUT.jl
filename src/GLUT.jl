@@ -64,8 +64,16 @@ export glutIdleFunc
 
 @getCFun "libglut" glutKeyboardFunc glutKeyboardFunc(callback::Ptr{None})::Void
 export glutKeyboardFunc
+@getCFun "libglut" glutKeyboardUpFunc glutKeyboardUpFunc(callback::Ptr{None})::Void
+export glutKeyboardUpFunc
 @getCFun "libglut" glutSpecialFunc glutSpecialFunc(callback::Ptr{None})::Void
 export glutSpecialFunc
+@getCFun "libglut" glutSpecialUpFunc glutSpecialUpFunc(callback::Ptr{None})::Void
+export glutSpecialUpFunc
+@getCFun "libglut" glutSetKeyRepeat glutSetKeyRepeat(repeatMode::Cint)::Cint
+export glutSetKeyRepeat
+
+
 @getCFun "libglut" glutReshapeFunc glutReshapeFunc(callback::Ptr{None})::Void
 export glutReshapeFunc
 @getCFun "libglut" glutVisibilityFunc glutVisibilityFunc(callback::Ptr{None})::Void

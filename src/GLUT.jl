@@ -3,11 +3,11 @@ module GLUT
 
 import GetC.@getCFun
 
-#Handle platform invariances... I don't know anything about mac
+#Handle platform invariances... I don't know anything about mac os, so just use libglut as well.
 const libGlut = @windows ? "freeglut" : @linux ? "libglut" : "libglut"
 
 @getCFun libGlut glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
-glutInit() = glutInit([1],["a"])
+glutInit() = glutInit(convert(Ptr{Int32},pointer([1])), ["a"])
 export glutInit
 
 @getCFun libGlut glutInitWindowPosition glutInitWindowPosition(x::Int32, y::Int32)::Void

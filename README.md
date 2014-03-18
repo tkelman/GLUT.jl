@@ -31,11 +31,9 @@ On Fedora, install the following:
 
 	freeglut
 
-The internet and the freeGLUT website seem to have instructions for Windows and
-Mac OS X, which (as always) have a more detailed (and frustrating) install
-process.  I suppose [Homebrew](http://mxcl.github.com/homebrew/) (the
-recommended choice from what I hear) or [MacPorts](https://www.macports.org)
-will be helpful for Mac users.
+The internet and the freeGLUT website seem to have instructions for Windows, 
+which (as always) have a more detailed (and frustrating) install
+process.  I think mac comes preinstalled with GLUT and should work out of the box.
 
 #Usage notes
 

@@ -3,11 +3,11 @@ module GLUT
 
 import GetC.@getCFun
 
-#Handle platform invariances... I don't know anything about mac
-const libGlut = @windows ? "freeglut" : @linux ? "libglut" : "libglut"
+#Handle platform invariances...
+const libGlut = @windows? "freeglut" : @linux? "libglut" : @osx? "/System/Library/Frameworks/GLUT.framework/GLUT" : error("Platform not recognized. Try setting GLUT library name yourself")
 
 @getCFun libGlut glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
-glutInit() = glutInit([1],["a"])
+glutInit() = glutInit(convert(Ptr{Int32},pointer([1])), ["a"])
 export glutInit
 
 @getCFun libGlut glutInitWindowPosition glutInitWindowPosition(x::Int32, y::Int32)::Void
@@ -94,7 +94,8 @@ export glutEntryFunc
 
 @getCFun libGlut glutGetProcAddress glutGetProcAddress(name::Ptr{Uint8})::Ptr{Void}
 export glutGetProcAddress
-
+@getCFun libGlut glutGet glutGet(state::Uint16)::Cint
+export glutGet
 
 const  FREEGLUT                        = 1
 const  GLUT_API_VERSION                = 4

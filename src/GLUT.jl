@@ -3,6 +3,7 @@ module GLUT
 import GetC.@getCFun
 
 include("../deps/deps.jl")
+@osx? (libglut = "/System/Library/Frameworks/GLUT.framework/GLUT") : nothing
 
 @getCFun libglut glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
 glutInit() = glutInit(convert(Ptr{Int32},pointer([1])), ["a"])

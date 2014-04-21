@@ -2,16 +2,16 @@ using BinDeps
 
 @BinDeps.setup
 
-deps = [ glut = library_dependency("GLUT", aliases = ["libglut", "freeglut"]) ]
+libglut = library_dependency("libglut", aliases = ["libglut", "freeglut"])
 
 @windows_only begin
 	using WinRPM
-	provides(WinRPM.RPM, "freeglut", glut, os = :Windows)
+	provides(WinRPM.RPM, "freeglut", libglut, os = :Windows)
 end
 
 @linux_only begin
-    provides(AptGet,"freeglut3-dev", glut)
-    provides(Yum, "freeglut-devel", glut)
+    provides(AptGet, {"freeglut3-dev" => libglut})
+    provides(Yum, {"freeglut-devel" => libglut})
 end
 
-@BinDeps.install
+@BinDeps.install [:libglut => :libglut]

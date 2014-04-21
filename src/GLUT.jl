@@ -89,6 +89,9 @@ export glutMotionFunc
 export glutPassiveMotionFunc
 @getCFun libglut glutEntryFunc glutEntryFunc(callback::Ptr{None})::Void
 export glutEntryFunc
+@getCFun libGlut glutCloseFunc glutCloseFunc(callback::Ptr{None})::Void
+export glutCloseFunc
+
 
 @getCFun libglut glutGetProcAddress glutGetProcAddress(name::Ptr{Uint8})::Ptr{Void}
 export glutGetProcAddress

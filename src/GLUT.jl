@@ -1,10 +1,8 @@
-
 module GLUT
 
-import GetC.@getCFun
+include("../deps/deps.jl")
 
-#Handle platform invariances... I don't know anything about mac
-const libGlut = @windows ? "freeglut" : @linux ? "libglut" : "libglut"
+import GetC.@getCFun
 
 @getCFun libGlut glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
 glutInit() = glutInit([1],["a"])

@@ -1,8 +1,8 @@
 module GLUT
 
-include("../deps/deps.jl")
-
 import GetC.@getCFun
+
+const libGlut = @windows? "freeglut" : "libglut"
 
 @getCFun libGlut glutInit glutInit(pargc::Ptr{Int32}, argv::Ptr{Ptr{Uint8}})::Void
 glutInit() = glutInit(convert(Ptr{Int32},pointer([1])), ["a"])

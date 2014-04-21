@@ -10,9 +10,9 @@ deps = [ glut = library_dependency("GLUT", aliases = ["libglut", "freeglut"]) ]
 end
 
 provides(AptGet,
-		{"freeglut" => glut})
+		{"freeglut3-dev" => glut})
 
 provides(Yum,
-		{"freeglut" => glut})
+		{"freeglut-devel" => glut})
 
-@BinDeps.install [:glut => :libGLUT]
+@BinDeps.install

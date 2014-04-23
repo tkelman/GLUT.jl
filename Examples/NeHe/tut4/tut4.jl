@@ -7,8 +7,9 @@
 
 # load necessary GLUT/OpenGL routines
 
-global OpenGLver="1.0"
 using OpenGL
+@OpenGL.version "1.0"
+@OpenGL.load
 using GLUT
 
 # initialize variables
